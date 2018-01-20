@@ -24,7 +24,7 @@ It uses a a multitasking cooperative framework and is very responsive to user in
 
 It integrates a number of open source libraries and leverages internet web services. I started buiding the software with a proper OO application framework in mind and you can find artifacts of it... but never had the time to properly finish it the way i started, so i quickly completed it with way too many hacks. Therefore code could be way better (not properly commented, test code, residuals...).  If anyone is interested in contributing, it's very welcome.
 
-Should anyone be interested, I can publish BoM, schematics etc and describe it. I still have 9 PCB that i am happy to give away to those who want to build it.
+Should anyone be interested, I can publish BoM, schematics etc and describe it. I still have a few PCBs that i am happy to give away to those who want to build it.
 
 ### MAIN FEATURES
 ```
