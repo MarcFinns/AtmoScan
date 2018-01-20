@@ -18,12 +18,56 @@
 * PM 01
 * Radiation
 
-It integrates a number of open source libraries and leverages internet web services .
-It has an LCD color display, it is gesture controled and it posts to ThingSpeak (or others) via MQTT, but can properly handle disconnected operations. With a rechargeable battery it lasts a day when disconnected.
+It does sensors sampling, UI handling, MQTT posting and I believe it squeezes quite a bit out of the ESP8266...
+
+It integrates a number of open source libraries and leverages internet web services. It has an LCD color display, it is gesture controled and it posts to ThingSpeak (or others) via MQTT, but can properly handle disconnected operations. With a rechargeable battery it lasts a day when disconnected.
 
 I started buiding the software with a proper framework in mind... but never had the time to properly finish it the way i started, so i quickly completed it with way too many hacks. Therefore code could be way better. If anyone is interested in contributing, it is welcome.
 
 Should anyone be interested, i can publish BoM, schematics etc and describe it. I still have 9 PCB that i am happy to give away at nominal price or less.
+
+### CREDITS
+
+
+**INCLUDES LIBRARIES FROM**
+
+```
+Adafruit
+Arcao
+Bblanchon
+Bodmer
+ClosedCube
+Gmag11
+Knolleary	
+Lucadentella
+Seeed
+Squix78
+Tzapu
+Wizard97	
+```
+
+**INTEGRATES WEB SERVICES FROM**
+
+```
+Adsbexchange.com
+GeoNames.org
+Google.com
+Mylnikov.org
+Timezonedb.com
+Wunderground.com
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
