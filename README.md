@@ -26,6 +26,22 @@ I started buiding the software with a proper framework in mind... but never had 
 
 Should anyone be interested, i can publish BoM, schematics etc and describe it. I still have 9 PCB that i am happy to give away at nominal price or less.
 
+### MAIN FEATURES
+```
+* Color screen
+* Gesture control
+* Location awareness
+* ThingSpeak logging        
+* Gracefully handles connected and disconnected operation
+* 24h Rechargeable battery
+* OTA updates
+* Bonus features:
+	* Weather Station
+	* Plane Spotter
+
+```
+
+
 ### CREDITS
 
 
