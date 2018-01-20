@@ -18,11 +18,11 @@
 * PM 01
 * Radiation
 
+It has an LCD color display, it is gesture controled and it posts to ThingSpeak (or others) via MQTT, but can properly handle disconnected operations. With a rechargeable battery it lasts a full day when disconnected from power.
+
 It uses a a multitasking cooperative framework and is very responsive to user input while sampling sensors, handling UI, posting to MQTT. I believe it squeezes quite a bit out of the tiny ESP8266...
 
-It integrates a number of open source libraries and leverages internet web services. It has an LCD color display, it is gesture controled and it posts to ThingSpeak (or others) via MQTT, but can properly handle disconnected operations. With a rechargeable battery it lasts a full day when disconnected from power.
-
-I started buiding the software with a proper framework in mind... but never had the time to properly finish it the way i started, so i quickly completed it with way too many hacks. Therefore code could be way better. If anyone is interested in contributing, it is welcome.
+It integrates a number of open source libraries and leverages internet web services. I started buiding the software with a proper framework in mind... but never had the time to properly finish it the way i started, so i quickly completed it with way too many hacks. Therefore code could be way better. If anyone is interested in contributing, it is welcome.
 
 Should anyone be interested, i can publish BoM, schematics etc and describe it. I still have 9 PCB that i am happy to give away at nominal price or less.
 
