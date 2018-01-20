@@ -22,7 +22,7 @@ It has an LCD color display, it is gesture controlled and it posts to ThingSpeak
 
 It uses a a multitasking cooperative framework and is very responsive to user input while sampling sensors, handling UI, posting to MQTT. I believe it squeezes quite a bit out of the tiny ESP8266...
 
-It integrates a number of open source libraries and leverages internet web services. I started buiding the software with a proper framework in mind... but never had the time to properly finish it the way i started, so i quickly completed it with way too many hacks. Therefore code could be way better (not properly commented, test code, residuals...).  If anyone is interested in contributing, it's very welcome.
+It integrates a number of open source libraries and leverages internet web services. I started buiding the software with a proper OO application framework in mind and you can find artifacts of it... but never had the time to properly finish it the way i started, so i quickly completed it with way too many hacks. Therefore code could be way better (not properly commented, test code, residuals...).  If anyone is interested in contributing, it's very welcome.
 
 Should anyone be interested, I can publish BoM, schematics etc and describe it. I still have 9 PCB that i am happy to give away at nominal price or less.
 
