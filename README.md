@@ -11,7 +11,7 @@
 * CO2
 * CO
 * NO2
-* Air Quality
+* VOC (Air Quality indicator)
 * PM 01
 * PM25
 * PM10
