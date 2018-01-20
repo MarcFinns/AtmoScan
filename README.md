@@ -45,7 +45,7 @@ Should anyone be interested, i can publish BoM, schematics etc and describe it. 
 ### CREDITS
 
 
-**INCLUDES LIBRARIES FROM**
+**INCLUDES CODE & LIBRARIES FROM**
 
 ```
 Adafruit
