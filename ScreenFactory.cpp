@@ -5,7 +5,6 @@
 // have the creator's constructor do the registration
 ScreenCreator::ScreenCreator()
 {
-  //-#ifdef DEBUG_SERIAL Serial.println("creator constructor");
   ScreenFactory::getInstance()->registerScreen(this);
 }
 
@@ -31,7 +30,6 @@ Screen* ScreenFactory::createScreen(int ScreenID)
 }
 
 
-
 ScreenFactory* ScreenFactory::getInstance()
 {
   if (!instance)
@@ -45,6 +43,5 @@ int ScreenFactory::getScreenCount()
 {
   return screenCreators.size();
 }
-
 
 

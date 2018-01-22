@@ -90,7 +90,6 @@ void ScreenSetup::deactivate()
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("ScreenSetup::deactivate()"));
 #endif
-
 }
 
 
@@ -223,6 +222,8 @@ void  ScreenSetup::startHotspot()
       LCD.println(F("Could NOT save configuration"));
 
   }
+
+  // Reboot
   LCD.setTextColor(TFT_YELLOW, TFT_RED);
   LCD.println(F(" Restarting the system "));
   delay(2000);

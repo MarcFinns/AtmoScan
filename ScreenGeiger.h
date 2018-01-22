@@ -8,11 +8,8 @@
 class ScreenGeiger: public Screen
 {
   public:
-    // Call the Process constructor
     ScreenGeiger() ;
-    virtual ~ScreenGeiger() {
-
-    }
+    virtual ~ScreenGeiger() {}
     virtual void activate();
     virtual void update();
     virtual void deactivate();

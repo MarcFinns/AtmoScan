@@ -7,12 +7,8 @@ class ScreenLowbatt: public Screen
 {
   public:
     // Call the Process constructor
-    ScreenLowbatt() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenLowbatt:Constructor");
-    }
-    virtual ~ScreenLowbatt() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenLowbatt:Destructor");
-    }
+    ScreenLowbatt() {}
+    virtual ~ScreenLowbatt() {}
     virtual void activate();
     virtual void update();
     virtual void deactivate();

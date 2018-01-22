@@ -60,7 +60,6 @@ class GfxUi
 
   protected:
 
-
     TFT_eSPI * _tft;
     uint16_t read16(fs::File &f);
     uint32_t read32(fs::File &f);

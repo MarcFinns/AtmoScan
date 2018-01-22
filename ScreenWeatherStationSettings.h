@@ -24,10 +24,6 @@
 
 #pragma once
 
-/*
-  #ifndef ScreenWeatherStationSettings_h
-  #define ScreenWeatherStationSettings_h
-*/
 
 // Setup
 const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes

@@ -11,16 +11,21 @@
 // Definitions
 // -------------------------------------------------------
 
+// Used to turn on debug log over syslog
 // #define DEBUG_SYSLOG
+
+// Used to turn on SOME log over serial
+// WARNING - this was used during development but can't be used in the fulluy assemled system, as serial port is used for a sensor
 // #define DEBUG_SERIAL
 
-#define ATMOSCAN_VERSION "v1.2.1"
+// Firmware revision
+#define ATMOSCAN_VERSION "v1.2.2"
+
+// This system name
+#define APP_NAME "ATMOSCAN"
 
 // Syslog server connection info (IP is from configuration portal)
 #define SYSLOG_PORT 514
-
-// This system info
-#define APP_NAME "ATMOSCAN"
 
 // I/O pins assignments
 #define VOC_PIN A0
@@ -30,7 +35,7 @@
 #define GEIGER_INTERRUPT_PIN 15
 #define CO2_RX_PIN 0
 #define CO2_TX_PIN 2
-#define BACKLIGHT_PIN 12 // Active low
+#define BACKLIGHT_PIN 12 // NOTE: Active low
 
 #define BACKLIGHT_TIMEOUT 60000 // millisec
 #define CONFIG_PORTAL_TIMEOUT 600 // sec
@@ -39,23 +44,22 @@
 #define SETUP_SCREEN 0
 #define LOWBATT_SCREEN 99
 
-// RUNTIME definitions
+// RUNTIME definitions (NOTE: ampirical)
 #define VOLT_LOW 3.2
 #define VOLT_HIGH 3.9
 
-#define AVERAGING_WINDOW 12
+#define AVERAGING_WINDOW 12         // NOTE: 12 * 5 sec sensor sampling rate = 1 minute
 
-#define FAST_SAMPLE_PERIOD 2000
-#define SLOW_SAMPLE_PERIOD 5000
-#define MQTT_UPDATE_PERIOD 60000
-#define GEOLOC_RETRY_PERIOD 10000
+#define FAST_SAMPLE_PERIOD 2000     // (ms) Used for Geiger sensor 
+#define SLOW_SAMPLE_PERIOD 5000     // (ms) Used for other sensors 
+#define MQTT_UPDATE_PERIOD 60000    // (ms)
+#define GEOLOC_RETRY_PERIOD 10000   // (ms)
 
 // -------------------------------------------------------
 //  Global constants
 // -------------------------------------------------------
 
-
-// NTP Server:
+// NTP Server - TODO: move into configuration?
 const char PROGMEM ntpServerName[] = "pool.ntp.org";
 
 
@@ -63,7 +67,7 @@ const char PROGMEM ntpServerName[] = "pool.ntp.org";
 //  Types
 // -------------------------------------------------------
 
-
+// Holds pointers to processes
 struct ProcessContainer
 {
   // Members
@@ -81,9 +85,9 @@ struct ProcessContainer
 
 };
 
+// Holds various items related to the current configuration
 struct Configuration
 {
-  RingBufCPP<String, 18> lastErrors;
   bool connected = false;
   int startScreen = START_SCREEN;
   char mqtt_topic1[64];

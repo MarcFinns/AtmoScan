@@ -8,10 +8,6 @@
 #include <Adafruit_BME280.h>        // https://github.com/adafruit/Adafruit_BME280_Library
 #include <MutichannelGasSensor.h>   // https://github.com/Seeed-Studio/Mutichannel_Gas_Sensor
 
-
-// #define DEBUG_SYSLOG
-
-
 // External variables
 extern Syslog syslog;
 extern struct ProcessContainer procPtr;
@@ -30,6 +26,9 @@ void errLog(String msg);
 // CO2 Sensor MH-Z19 definitions
 #define MHZ19_COMMAND_SIZE 9
 #define MHZ19_RESPONSE_SIZE 9
+
+// Temperature sensor definitions
+#define TEMPERATURE_ADJUSTMENT_FACTOR 1.5 // NOTE: empirical correction based on observations, TBC
 
 
 // Particle sensor PMS7003 definitions
@@ -88,7 +87,7 @@ void Proc_ComboTemperatureHumiditySensor::service()
   float humidity = hdc1080.readHumidity();
 
   // averages
-  avgTemperature.push(temp - 1.5L); // NOTE: empirical correction based on observations, TBC
+  avgTemperature.push(temp - TEMPERATURE_ADJUSTMENT_FACTOR); 
   avgHumidity.push(humidity);
 
 }
@@ -476,7 +475,7 @@ Proc_GeigerSensor *Proc_GeigerSensor::instance = nullptr;
 
 Proc_GeigerSensor::Proc_GeigerSensor(Scheduler &manager, ProcPriority pr, unsigned int period, int iterations)
   :  Process(manager, pr, period, iterations),
-     avgCPM(AVERAGING_WINDOW * 2)
+     avgCPM(AVERAGING_WINDOW)
 {
 }
 

@@ -9,7 +9,6 @@
 #include "AnalogMeter.h"
 
 
-
 // External variables
 extern Syslog syslog;
 extern TFT_eSPI LCD;
@@ -23,8 +22,9 @@ ScreenGeiger::ScreenGeiger()
 void ScreenGeiger::activate()
 {
 #ifdef DEBUG_SYSLOG 
-  syslog.log(LOG_INFO, "ScreenGeiger::activate()");
+  syslog.log(LOG_INFO, F("ScreenGeiger::activate()"));
 #endif
+
   // Clear screnn
   LCD.fillScreen(TFT_BLACK);
 
@@ -50,7 +50,7 @@ void ScreenGeiger::update()
 void ScreenGeiger::deactivate()
 {
 #ifdef DEBUG_SYSLOG 
-  syslog.log(LOG_INFO, "ScreenGeiger::deactivate()");
+  syslog.log(LOG_INFO, F("ScreenGeiger::deactivate()"));
 #endif
 
 }

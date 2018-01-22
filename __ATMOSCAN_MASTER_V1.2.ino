@@ -4,11 +4,12 @@
 /* Author: Marc Finns 2017                              */
 /*                                                      */
 /*  Components:                                         */
-/*      - NodeMCU ESP8266 ESP-12E                       */
+/*      - ESP8266 ESP-12E                               */
 /*      - HDC1080 Humidity & Temperature Sensor         */
 /*      - Plantower PMS7003 Particle sensor             */
 /*      - MZ-H19 CO2 sensor                             */
 /*      - Air Quality Sensor (based on Winsen MP503)    */
+/*      - Multigas sensor (Based on MiCS6814)           */
 /*      - BME 280 Pressure & humidity sensor            */
 /*                                                      */
 /*  Wiring:                                             */
@@ -52,6 +53,7 @@
 #include <WiFiClient.h>
 #include <DNSServer.h>
 #include "SPI.h"
+#include <Wire.h>
 
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 #include <Average.h>              // https://github.com/MajenkoLibraries/Average
@@ -62,7 +64,7 @@
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 #include <TimeSpace.h>            // https://github.com/MarcFinns/TimeSpaceLib
 
-// My libraries
+// Project includes
 #include "GlobalDefinitions.h"
 #include "ScreenFactory.h"
 
@@ -75,19 +77,18 @@
 #include "ScreenWeatherStation.h"
 #include "ScreenErrLog.h"
 
-// TO BE SORTED
+// Graphics & fonts
 #include "Artwork.h"
 #include "ArialRoundedMTBold_14.h"
 #include "ArialRoundedMTBold_36.h"
 #include "Free_Fonts.h"
 #include "Bitmaps.h"
 
-#include <Wire.h>
 
+// Allows to change the clock speed aty runtime
 extern "C" {
 #include "user_interface.h"
 }
-
 
 
 // -------------------------------------------------------
@@ -106,18 +107,13 @@ TFT_eSPI LCD = TFT_eSPI();
 // Global UI management
 GfxUi ui(&LCD);
 
-// UDP instance to let us send and receive packets over UDP
-WiFiUDP udpClient;
-
 WiFiClient wifiClient;
 
+// UDP instance to send and receive packets over UDP
+WiFiUDP udpClient;
 
-// Create a new empty syslog instance
+// Global syslog instance
 Syslog syslog(udpClient, SYSLOG_PROTO_IETF);
-
-// Configuration
-Configuration config;
-
 
 // Download manager
 WebResource webResource;
@@ -132,11 +128,16 @@ ScreenCreatorImpl<ScreenPlaneSpotter> creator5;
 ScreenCreatorImpl<ScreenWeatherStation> creator6;
 
 
-
-// Create a global Scheduler object
+// Global Scheduler object
 Scheduler sched;
 
-// Create processes
+// Last errors list 
+RingBufCPP<String, 18> lastErrors;
+
+// Configuration container structure
+Configuration config;
+
+//  Processes container structure
 ProcessContainer procPtr =
 {
   Proc_ComboTemperatureHumiditySensor(sched,
@@ -188,7 +189,6 @@ ProcessContainer procPtr =
   MEDIUM_PRIORITY,
   GEOLOC_RETRY_PERIOD,
   RUNTIME_FOREVER)
-
 };
 
 
@@ -202,29 +202,28 @@ void setup()
   // Wait for electronics to settle
   delay(2000);
 
+  // Dynamically create systemID based on MAC address
   systemID = F("ATMOSCAN-");
   systemID += WiFi.macAddress();
   systemID.replace(F(":"), F(""));
 
-  // Setup the LCD
+  // Initiatlise the LCD
   LCD.init();
-
   LCD.setRotation(2);
   LCD.fillScreen(TFT_BLACK);
 
-  // **********************  Splash screen
-  ui.drawBitmap(Splash_Screen, (LCD.width() - splashWidth) / 2, 20, splashWidth, splashHeight);
 
   // Initialise text engine
-  //LCD.setTextColor(TFT_YELLOW, TFT_BLACK);
   LCD.setTextColor(TFT_WHITE, TFT_BLACK);
   LCD.setTextWrap(false);
-
   LCD.setFreeFont(FSS9);
   int  xpos = 0;
-  int  ypos = 20; //170;
-
+  int  ypos = 20;
   LCD.setTextDatum(BR_DATUM);
+
+  // **********************  Draw splash screen
+  ui.drawBitmap(Splash_Screen, (LCD.width() - splashWidth) / 2, 20, splashWidth, splashHeight);
+
   LCD.drawString(ATMOSCAN_VERSION, xpos, ypos, GFXFF);
 
   xpos = 240;
@@ -265,8 +264,8 @@ void setup()
   LCD.drawString(F("Lucadentella"), 85, ypos, GFXFF);
   LCD.drawString(F("Wizard97"), 170, ypos, GFXFF);
 
-  // ********************* Credits: web services
 
+  // ********************* Credits: web services
   ypos +=  lineSpacing + 6;
 
   LCD.setTextDatum(BC_DATUM);
@@ -288,29 +287,28 @@ void setup()
 
 
   /////////////////////////////////////////////////////
-  // clean SPIFFS FS, for testing
+  // clean SPIFFS FS, used for testing
   // SPIFFS.format();
   /////////////////////////////////////////////////////
-
-  // **********************  Initialization screen
 
   // Initialise I2C bus
   Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
 
-  // Create scheduler and process objects
-  initProcesses();
+  // Add process objects to scheduler
+  addProcesses();
 
   // Turn on LCD and wait a bit on splash screen...
   procPtr.UIManager.displayOn();
   delay (1000);
 
+  // **********************  Initialization with progress bar...
   LCD.setFreeFont(FSS9);
   LCD.setTextDatum(TL_DATUM);
   LCD.setTextColor(TFT_YELLOW, TFT_BLACK);
   xpos = 6;
   ypos = 195;
 
-  // Retrieve dynamic config parameters from SPIFSS such as MQTT Topic and servers
+  // Retrieve dynamic config parameters from SPIFSS (such as MQTT Topics and servers)
 
   // Draw progress bar...
   ui.drawProgressBar(10, 175, 240 - 20, 15, 0, TFT_YELLOW, TFT_BLUE);
@@ -319,7 +317,9 @@ void setup()
   LCD.drawString(F("Retrieving configuration...       "), xpos, ypos, GFXFF);
   ui.drawProgressBar(10, 175, 240 - 20, 15, 30, TFT_YELLOW, TFT_BLUE);
 
-  delay(1000);
+  delay(500);
+
+  // Retrieve configuration from SPIFFS, if existent
   if (retrieveConfig())
   {
     config.configValid = true;
@@ -328,20 +328,21 @@ void setup()
     LCD.drawString(F("Connecting to network...    "), xpos, ypos, GFXFF);
     ui.drawProgressBar(10, 175, 240 - 20, 15, 60, TFT_YELLOW, TFT_BLUE);
 
-    delay(1000);
+    delay(500);
 
     // Handle Wifi connection, including dynamic config parameters such as MQTT Topic and server
     config.connected = wifiConnect();
 
-    // Initialize time library
+    // Initialize NTP library
     initNTP();
 
-    // Prepare syslog configuration
+    //  Configure syslog instance
     syslog.server(config.syslog_server, SYSLOG_PORT);
     syslog.deviceHostname(systemID.c_str());
     syslog.appName(APP_NAME);
     syslog.defaultPriority(LOG_KERN);
 
+    // Start logging
     syslog.log(LOG_INFO, "******* Booting firmware " + String(ATMOSCAN_VERSION) + ", Built " + String(__DATE__ " " __TIME__) + " ******* ");
 
     // Log current configuration
@@ -372,7 +373,7 @@ void setup()
   }
   else
   {
-    // If no valid config, force configuration screen
+    // If no valid config found, force Setup screen
     config.configValid = false;
     config.startScreen = SETUP_SCREEN;
   }
@@ -389,7 +390,7 @@ void setup()
 
   delay(500);
 
-  // Cleanup old maps from SPIFFS
+  // Cleanup old maps from SPIFFS, if present
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "SPIFFS dir listing:");
 #endif
@@ -412,6 +413,7 @@ void setup()
     }
   }
 
+  // Configuration completed!
   syslog.log(LOG_INFO, F("************ INITIALIZATION COMPLETE, STARTING PROCESSES *************"));
 }
 
@@ -431,7 +433,7 @@ void loop()
 }
 
 
-///////////////////////////////// OTA firmware update management
+// OTA firmware update management
 
 int lastOTAprogressPercentual = 0;
 
@@ -440,7 +442,7 @@ void initOTA()
   // Port defaults to 8266
   ArduinoOTA.setPort(8266);
 
-  //Sset Hostname
+  // Set Hostname
   ArduinoOTA.setHostname(systemID.c_str());
 
   // Default password
@@ -449,12 +451,13 @@ void initOTA()
   ArduinoOTA.onStart([]()
   {
     // Turn on backlight
-    LCD.setRotation(2);
     procPtr.UIManager.displayOn();
+
+    // Reset screen settings
+    LCD.setRotation(2);
     LCD.fillScreen(TFT_BLUE);
     LCD.setTextColor(TFT_YELLOW, TFT_BLUE);
     LCD.setFreeFont(FSS9);
-    //LCD.setTextSize(1);
     LCD.setTextDatum(BC_DATUM);
     LCD.drawString(F("OTA Firmware update"), 120, 20, GFXFF);
     syslog.log(LOG_INFO, F("OTA Update Start"));
@@ -465,7 +468,7 @@ void initOTA()
     LCD.setTextDatum(BL_DATUM);
     LCD.drawString(F("Rebooting..."), 0, 120, GFXFF);
     syslog.log(LOG_INFO, F("OTA Update End - Rebooting"));
-    delay(3000);
+    delay(2000);
     ESP.restart();
   });
 
@@ -473,6 +476,8 @@ void initOTA()
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
   {
     int progressPercentual = progress / (total / 100.0);
+
+    // Print OTA progress only if incremented
     if (progressPercentual != lastOTAprogressPercentual)
     {
       // Print OTA progress
@@ -489,7 +494,7 @@ void initOTA()
     if (error == OTA_AUTH_ERROR)
     {
       LCD.drawString(F("OTA Auth Failed"), 0, 100, GFXFF);
-      errLog( F("OTA Auth Failed"));
+      errLog(F("OTA Auth Failed"));
     }
     else if (error == OTA_BEGIN_ERROR)
     {
@@ -512,19 +517,15 @@ void initOTA()
       errLog( F("OTA Update End Failed"));
     }
 
-    delay(3000);
+    delay(2000);
     ESP.restart();
   });
 
-  // OTA Setup
-  String hostname(systemID);
-  hostname += String(ESP.getChipId(), HEX);
-  WiFi.hostname(hostname);
-  ArduinoOTA.setHostname((const char *)hostname.c_str());
+  // OTA name Setup
+  ArduinoOTA.setHostname((const char *)systemID.c_str());
 
   // Begin listening
   ArduinoOTA.begin();
-
 }
 
 // Manage network disconnection
@@ -538,16 +539,20 @@ void onSTADisconnected(WiFiEventStationModeDisconnected event_info)
   config.connected = false;
 }
 
+
 // Manage network reconnection
 void onSTAGotIP(WiFiEventStationModeGotIP ipInfo)
 {
 #ifdef DEBUG_SERIAL
   Serial.println("WiFi Connected");
 #endif
+
+  // Remember current connection status in configuration
   config.connected =  true;
 }
 
 
+// Network time management
 void initNTP()
 {
   static WiFiEventHandler e1, e2;
@@ -576,8 +581,8 @@ void initNTP()
   e2 = WiFi.onStationModeDisconnected(onSTADisconnected);
 }
 
-
-void initProcesses()
+// Add processes to scheduler
+void addProcesses()
 {
 
   // Add processes to the scheduler
@@ -594,6 +599,7 @@ void initProcesses()
 
 }
 
+// Enable Process scheduling
 void startProcesses()
 {
   // Enable processes
@@ -609,7 +615,7 @@ void startProcesses()
   procPtr.GeoLocation.enable();
 }
 
-
+// Retrieve previously saved configuration from SPIFFS
 bool retrieveConfig()
 {
   // Read configuration from FS json
@@ -621,11 +627,12 @@ bool retrieveConfig()
       Serial.println("Configuration found");
 #endif
 
-      //file exists, reading and loading
+      //file exists, read and load it
       fs::File configFile = SPIFFS.open(F("/config.json"), "r");
       if (configFile)
       {
         size_t size = configFile.size();
+
         // Allocate a buffer to store contents of the file.
         std::unique_ptr<char[]> buf(new char[size]);
 
@@ -635,6 +642,7 @@ bool retrieveConfig()
 
         if (json.success())
         {
+
 #ifdef DEBUG_SERIAL
           Serial.println("JSON parse success ");
 #endif
@@ -680,12 +688,17 @@ bool retrieveConfig()
   }
 }
 
+
+// Connect to WiFi
 bool wifiConnect()
 {
-  // Connect to WiFi using last good credentials
-
+  // Connect using last good credentials
   WiFi.mode(WIFI_STA);
   WiFi.begin();
+
+  // Set hostname
+  WiFi.hostname(systemID);
+  
   // Wait for connection...
   int counter = 0;
   while (WiFi.status() != WL_CONNECTED && counter++ < 30)
@@ -729,6 +742,7 @@ void logESPconfig()
 #endif
 
 
+// Allows to dynamically set CPU clock (80 or 160 MHz)
 void setTurbo(bool setTurbo)
 {
 
@@ -751,11 +765,13 @@ void setTurbo(bool setTurbo)
 
 }
 
+// Check current CPU clock status
 bool isTurbo()
 {
   return turbo;
 }
 
+// Log error on both syslog and error screen, managing a circular buffer
 void errLog(String msg)
 {
   // Log time
@@ -763,14 +779,14 @@ void errLog(String msg)
   sprintf(logTime, "[%d/%d/%d %d:%02d.%02d] ", day(), month(), year(), hour(), minute(), second());
 
   // Manage buffer
-  if (config.lastErrors.isFull())
+  if (lastErrors.isFull())
   {
     // Remove oldest (outgoing) element
     String first;
-    config.lastErrors.pull(&first);
+    lastErrors.pull(&first);
   }
 
-  config.lastErrors.add(String(logTime) + msg);
+  lastErrors.add(String(logTime) + msg);
   syslog.log(LOG_ERR, msg);
 }
 

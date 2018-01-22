@@ -1,4 +1,10 @@
 
+/********************************************************/
+/*                                                      */
+/*  Marc Finns 2017, based on Bodmer TFT examples       */
+/*                                                      */
+/********************************************************/
+
 #include "AnalogMeter.h"
 #include "TFT_eSPI.h"
 
@@ -33,7 +39,6 @@ void AnalogMeter::begin()
   LCD.fillRect(5, offsetY + 3, 230, 119, TFT_WHITE);
   LCD.setTextColor(TFT_BLACK);  // Text colour
 
-  //---------------------------------------------------------
   // Draw scale
 
   // Draw ticks every 5 degrees from -50 to +50 degrees (100 deg. FSD swing)

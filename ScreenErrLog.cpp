@@ -14,11 +14,12 @@ extern TFT_eSPI LCD;
 extern struct ProcessContainer procPtr;
 extern struct Configuration config;
 extern String systemID;
+extern RingBufCPP<String, 18> lastErrors;
 
 void ScreenErrLog::activate()
 {
-#ifdef DEBUG_SYSLOG 
-  syslog.log(LOG_INFO, "ScreenErrLog::activate()");
+#ifdef DEBUG_SYSLOG
+  syslog.log(LOG_INFO, F("ScreenErrLog::activate()"));
 #endif
 
   LCD.fillScreen(TFT_BLACK);
@@ -27,12 +28,12 @@ void ScreenErrLog::activate()
   LCD.setFreeFont(&Dialog_plain_13);
 
   LCD.setTextDatum(TC_DATUM);
-  LCD.drawString("Last error events", 120, 68, GFXFF);
+  LCD.drawString(F("Last error events"), 120, 68, GFXFF);
 }
 
 void ScreenErrLog::update()
 {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("ScreenErrLog::update()"));
 #endif
 
@@ -46,10 +47,10 @@ void ScreenErrLog::update()
   LCD.fillRect(0, 80, 240, 240, TFT_BLACK);
 
   // Loop through all existing elements (if any)
-  for ( int x = config.lastErrors.numElements(); x > 0; x--)
+  for ( int x = lastErrors.numElements(); x > 0; x--)
   {
     // Retrieve element
-    String msg = *config.lastErrors.peek(x - 1);
+    String msg = *lastErrors.peek(x - 1);
 
     // Print it
     LCD.println(msg);
@@ -58,8 +59,8 @@ void ScreenErrLog::update()
 
 void ScreenErrLog::deactivate()
 {
-#ifdef DEBUG_SYSLOG 
-  syslog.log(LOG_INFO, "ScreenErrLog::deactivate()");
+#ifdef DEBUG_SYSLOG
+  syslog.log(LOG_INFO, F("ScreenErrLog::deactivate())");
 #endif
 }
 

@@ -8,12 +8,8 @@ class ScreenSetup: public Screen
 {
   public:
     // Call the Process constructor
-    ScreenSetup() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenSetup:Constructor");
-    }
-    virtual ~ScreenSetup() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenSetup:Destructor");
-    }
+    ScreenSetup() {}
+    virtual ~ScreenSetup() {}
     virtual void activate();
     virtual void update();
     virtual void deactivate();

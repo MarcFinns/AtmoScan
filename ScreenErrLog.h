@@ -7,13 +7,8 @@
 class ScreenErrLog: public Screen
 {
   public:
-    // Call the Process constructor
-    ScreenErrLog() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenStatus:Constructor");
-    }
-    virtual ~ScreenErrLog() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenStatus:Destructor");
-    }
+    ScreenErrLog() {}
+    virtual ~ScreenErrLog() {}
     virtual void activate();
     virtual void update();
     virtual void deactivate();

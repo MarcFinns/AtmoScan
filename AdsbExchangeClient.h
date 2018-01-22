@@ -69,8 +69,6 @@ struct Aircraft {
 };
 
 
-
-
 class AdsbExchangeClient: public JsonListener {
   private:
     int counter = 0;

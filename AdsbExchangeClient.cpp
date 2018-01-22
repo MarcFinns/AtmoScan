@@ -30,6 +30,9 @@
 // Extern variables
 extern WiFiClient wifiClient;
 
+// Prototypes
+void errLog(String msg);
+
 AdsbExchangeClient::AdsbExchangeClient() {}
 
 void AdsbExchangeClient::updateVisibleAircraft(String searchQuery)
@@ -38,28 +41,18 @@ void AdsbExchangeClient::updateVisibleAircraft(String searchQuery)
   JsonStreamingParser parser;
   parser.setListener(this);
 
-  //WiFiClient wifiClient;
-
   // http://public-api.adsbexchange.com/VirtualRadar/AircraftList.json?lat=47.437691&lng=8.568854&fDstL=0&fDstU=20&fAltL=0&fAltU=5000
 
   const char host[] = "global.adsbexchange.com";
-  /*
-    String url = "/VirtualRadar/AircraftList.json?" + searchQuery;
-  */
 
   const int httpPort = 80;
   if (!wifiClient.connect(host, httpPort))
   {
-    //-#ifdef DEBUG_SERIAL Serial.println(F("connection failed"));
+    errLog(F("Can't connect to adsbexchange.com"));
     return;
   }
 
-  /*
-    // This will send the request to the server
-    wifiClient.print("GET " + url + " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-  */
+  // Get Aircrafts list
   wifiClient.print(F("GET "));
   wifiClient.print(F("/VirtualRadar/AircraftList.json?"));
   wifiClient.print(searchQuery);

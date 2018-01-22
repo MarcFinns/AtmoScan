@@ -8,12 +8,8 @@ class ScreenSensors: public Screen
 {
   public:
     // Call the Process constructor
-    ScreenSensors() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenSensors:Constructor");
-    }
-    virtual ~ScreenSensors() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenSensors:Destructor");
-    }
+    ScreenSensors() {}
+    virtual ~ScreenSensors() {}
     virtual void activate();
     virtual void update();
     virtual void deactivate();
@@ -26,7 +22,6 @@ class ScreenSensors: public Screen
   private:
 
     void printWithTrend(int &lastColor, float &lastValue, float newValue, String suffix, int decimals, int xpos, int ypos);
-
     float lastTemperature = -1;
     float lastHumidity = -1;
     float lastPressure = -1;

@@ -8,12 +8,8 @@ class ScreenStatus: public Screen
 {
   public:
     // Call the Process constructor
-    ScreenStatus() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenStatus:Constructor");
-    }
-    virtual ~ScreenStatus() {
-      //-#ifdef DEBUG_SERIAL Serial.println("ScreenStatus:Destructor");
-    }
+    ScreenStatus() {}
+    virtual ~ScreenStatus() {}
     virtual void activate();
     virtual void update();
     virtual void deactivate();

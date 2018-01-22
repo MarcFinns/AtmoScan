@@ -111,16 +111,16 @@ void Proc_UIManager::service()
     {
       // NO: Force LowBattery screen
 
-      syslog.log(LOG_CRIT, "BATTERY LOW - HALTING SYSTEM");
+      syslog.log(LOG_CRIT, F("BATTERY LOW - HALTING SYSTEM"));
 
       // Deactivate & Deallocate previous screen
       currentScreen->deactivate();
       delete currentScreen;
 
-      // Setup becomes the current screen
+      // LOWBATT becomes the current screen
       currentScreenID = LOWBATT_SCREEN;
 
-      // Allocate & Activate setup screen
+      // Allocate & Activate LOWBATT screen
       currentScreen = new ScreenLowbatt();
       currentScreen->activate();
 
@@ -132,7 +132,7 @@ void Proc_UIManager::service()
       this->setPeriod(currentScreen->getRefreshPeriod());
 
       // Switch off processes
-      // TODO: make it generic and implement global stopProcesses
+      // TODO: now hardcoded... make it generic and implement global stopProcesses
       procPtr.ComboTemperatureHumiditySensor.disable();
       procPtr.ComboPressureHumiditySensor.disable();
       procPtr.ParticleSensor.disable();
@@ -150,7 +150,7 @@ void Proc_UIManager::service()
   // If in LOWBATT mode and battery is recharging, reset
   else if (getVolt() > VOLT_HIGH &&  currentScreenID == LOWBATT_SCREEN)
   {
-    syslog.log(LOG_INFO, "BATTERY HIGH - RESTARTING SYSTEM" );
+    syslog.log(LOG_INFO, F("BATTERY HIGH - RESTARTING SYSTEM") );
     delay(1000);
     ESP.restart();
   }
@@ -261,15 +261,6 @@ void Proc_UIManager::service()
             if (eventID == GES_CLOCKWISE)
             {
 
-              // x,y == coords of centre of arc
-              // start_angle = 0 - 359
-              // seg_count = number of 6 degree segments to draw (60 => 360 degree arc)
-              // rx = x axis outer radius
-              // ry = y axis outer radius
-              // w  = width (thickness) of arc in pixels
-              // colour = 16 bit colour value
-              // Note if rx and ry are the same then an arc of a circle is drawn
-
               // Draw rotation icon
               ui.fillArc(120, 160, 90, 45, 70, 70, 30, TFT_RED);
 
@@ -310,7 +301,7 @@ void Proc_UIManager::service()
             else
             {
 
-              // Determine new screen, based on user gesture
+              // Determine new screen ID, based on user gesture
               int newScreenID = handleSwipe(eventID, currentScreenID);
 
 #ifdef DEBUG_SYSLOG
@@ -368,7 +359,7 @@ void Proc_UIManager::service()
   {
 
     // If timeout, switch off backlight
-    if  (isDisplayOn && millis() - eventTime > BACKLIGHT_TIMEOUT * (1 + (getSoC() > 95)) ? 1 : 0) // Over 94% we assume we are on power
+    if  (isDisplayOn && millis() - eventTime > BACKLIGHT_TIMEOUT * (1 + (getSoC() > 95)) ? 1 : 0) // Over 94% we assume we are on power, longer timeout
     {
 #ifdef DEBUG_SERIAL
       Serial.println("Timeout - switching off display");
@@ -380,7 +371,7 @@ void Proc_UIManager::service()
   // Update screen only if backlight is on OR if s=current screen requires to be refreshed anyway
   if (isDisplayOn || currentScreen->getRefreshWithScreenOff())
   {
-    // If screen needs refresh, do it
+    // If screen needs refresh at this time, do it
     if (millis() - currentScreen->lastUpdate >= currentScreen->getRefreshPeriod() - 50)  // make some allowance for the Scheduler delay...
     {
       // Refresh top bar unless we are full screen
@@ -529,7 +520,6 @@ int Proc_UIManager::getUserEvent()
 #endif
 #endif
   }
-
 
   return gesture;
 }

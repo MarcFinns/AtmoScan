@@ -20,8 +20,6 @@ class AnalogMeter
     int decades, orangeValue, redValue, minValue, maxValue;
     float ltx = 0;
     uint16_t osx = 120, osy = 120; // Saved x & y coords
-    //    uint32_t updateTime = 0;       // time for next update
-
 
     float mapf(float x, float in_min, float in_max, float out_min, float out_max);
     void fillArc(int x, int y, int start_angle, int seg_count, int rx, int ry, int w, unsigned int colour);

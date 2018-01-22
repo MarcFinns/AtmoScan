@@ -11,8 +11,6 @@
 #include "GfxUi.h"      // Additional UI functions
 
 
-
-
 // External variables
 extern Syslog syslog;
 extern TFT_eSPI LCD;
