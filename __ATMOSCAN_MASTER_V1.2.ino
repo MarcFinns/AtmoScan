@@ -1,18 +1,3 @@
-/*
-  MQTT SERVER:
-  mqtt.thingspeak.com
-
-  TOPIC:
-  channels/177083/publish/KLPZ79R8Q0MSJOWM
-
-  channel2
-  channels/236853/publish/1UV9V9GVHVP7SLRC
-
-  channel 3
-  channels/316750/publish/OGBF9DTUDWYMIRIT
-
-*/
-
 /********************************************************/
 /*                    ATMOSCAN                          */
 /*                                                      */
