@@ -1,0 +1,14 @@
+#
+# Lines to be added to boards.txt to support 4M (2M SPIFFS)
+#
+
+
+nodemcuv2.menu.FlashSize.4M2M=4M (2M SPIFFS)
+nodemcuv2.menu.FlashSize.4M2M.build.flash_size=4M
+nodemcuv2.menu.FlashSize.4M2M.build.flash_ld=eagle.flash.4m2m.ld
+nodemcuv2.menu.FlashSize.4M2M.build.spiffs_pagesize=256
+nodemcuv2.menu.FlashSize.4M3M.upload.maximum_size=1044464
+nodemcuv2.menu.FlashSize.4M2M.build.spiffs_start=0x200000
+nodemcuv2.menu.FlashSize.4M2M.build.spiffs_end=0x3FB000
+nodemcuv2.menu.FlashSize.4M2M.build.spiffs_blocksize=8192
+
