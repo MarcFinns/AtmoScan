@@ -1,11 +1,12 @@
 #pragma once
 
+#include <RingBufCPP.h>           //https://github.com/wizard97/Embedded_RingBuf_CPP
+
 #include "P_UIManager.h"
 #include "P_MQTT.h"
 #include "P_AirSensors.h"
 #include "P_GeoLocation.h"
 #include "WundergroundClient.h"
-#include <RingBufCPP.h>           //https://github.com/wizard97/Embedded_RingBuf_CPP
 
 // -------------------------------------------------------
 // Definitions
@@ -19,7 +20,7 @@
 // #define DEBUG_SERIAL
 
 // Firmware revision
-#define ATMOSCAN_VERSION "v1.2.2"
+#define ATMOSCAN_VERSION "v1.2.3"
 
 // This system name
 #define APP_NAME "ATMOSCAN"
