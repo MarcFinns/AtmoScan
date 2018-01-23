@@ -1,12 +1,5 @@
 #pragma once
 
-/*
-  #ifndef P_AirSensors_h
-  #define P_AirSensors_h
-*/
-
-#include "Arduino.h"
-
 #include <Average.h>                // https://github.com/MajenkoLibraries/Average
 #include <ProcessScheduler.h>       // https://github.com/wizard97/ArduinoProcessScheduler
 #include <ClosedCube_HDC1080.h>     // https://github.com/closedcube/ClosedCube_HDC1080_Arduino
@@ -104,9 +97,8 @@ class Proc_CO2Sensor: public Process, public BaseSensor
   private:
     // Properties
     Average<float> avgCO2;
-    SoftwareSerial co2;
-
-    // methods
+    SoftwareSerial co2Serial;
+    bool readError =  false;
 
 };
 // END CO2 Sensor wrapper (MH-Z19)
@@ -136,6 +128,7 @@ class Proc_ParticleSensor: public Process, public BaseSensor
     Average<float> avgPM01;
     Average<float> avgPM2_5;
     Average<float> avgPM10;
+    bool readError =  false;
 
     // methods
     char verifyChecksum(unsigned char *thebuf, int leng);
@@ -163,8 +156,6 @@ class Proc_VOCSensor : public Process, public BaseSensor
   private:
     // Properties
     Average<float> avgVOC;
-
-    // methods
 };
 // END VOC Sensor wrapper (Grove - Air quality sensor v1.3)
 
@@ -183,7 +174,6 @@ class Proc_GeigerSensor : public Process, public BaseSensor
     static void onTubeEventISR();
     void onTubeEvent();
 
-
   protected:
     virtual void setup();
     virtual void service();
@@ -191,7 +181,6 @@ class Proc_GeigerSensor : public Process, public BaseSensor
   private:
     // Properties
     volatile unsigned long counts = 0;  // variable for GM Tube events
-    //float lastCPM = 0 ;                 // variable for CPM
     float radiationValue = 0.0;         // Radiation energy in uSv/h
     unsigned long lastCountReset = 0;
     static Proc_GeigerSensor * instance;

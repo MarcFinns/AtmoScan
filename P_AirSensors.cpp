@@ -1,12 +1,11 @@
-#include "P_AirSensors.h"
-
-#include "GlobalDefinitions.h"
-#include "Arduino.h"
 
 #include <ProcessScheduler.h>     // https://github.com/wizard97/ArduinoProcessScheduler
 #include <Syslog.h>                 // https://github.com/arcao/ESP8266_Syslog
 #include <Adafruit_BME280.h>        // https://github.com/adafruit/Adafruit_BME280_Library
 #include <MutichannelGasSensor.h>   // https://github.com/Seeed-Studio/Mutichannel_Gas_Sensor
+
+#include "P_AirSensors.h"
+#include "GlobalDefinitions.h"
 
 // External variables
 extern Syslog syslog;
@@ -61,17 +60,24 @@ void Proc_ComboTemperatureHumiditySensor::setup()
   //  Sensor begin
   hdc1080.begin(0x40);
 
-  // Is the device reachable?
-  if (!(hdc1080.readDeviceId() == 0x1050))
-  {
-    // There was a problem detecting the sensor
-    errLog(F("Could not find a valid hdc1080 sensor"));
-  }
-
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, "Manufacturer ID=" + String((hdc1080.readManufacturerId(), HEX)));  // 0x5449 ID of Texas Instruments
   syslog.log(LOG_INFO, "Device ID=" + String((hdc1080.readDeviceId(), HEX)));  // 0x1050 ID of the device
 #endif
+
+  // Is the device reachable?
+  if (!(hdc1080.readDeviceId() == 0x1050))
+  {
+    // There was a problem detecting the sensor
+    errLog(F("Could not find a valid hdc1080 sensor - Sensor disabled"));
+
+    // Set invalid reading
+    avgTemperature.push(-999);
+    avgHumidity.push(-999);
+
+    // Disable process
+    this->disable();
+  }
 }
 
 void Proc_ComboTemperatureHumiditySensor::service()
@@ -87,7 +93,7 @@ void Proc_ComboTemperatureHumiditySensor::service()
   float humidity = hdc1080.readHumidity();
 
   // averages
-  avgTemperature.push(temp - TEMPERATURE_ADJUSTMENT_FACTOR); 
+  avgTemperature.push(temp - TEMPERATURE_ADJUSTMENT_FACTOR);
   avgHumidity.push(humidity);
 
 }
@@ -126,7 +132,15 @@ void Proc_ComboPressureHumiditySensor::setup()
   if (!bme.begin(0x76))
   {
     // There was a problem detecting the sensor
-    errLog(F("No valid BME280 sensor"));
+    errLog(F("No valid BME280 sensor - Sensor disabled"));
+
+    // Set invalid reading
+    avgPressure.push(-999);
+    avgTemperature.push(-999);
+    avgHumidity.push(-999);
+
+    // Disable process
+    this->disable();
   }
 }
 
@@ -173,7 +187,7 @@ float Proc_ComboPressureHumiditySensor::getTemperature()
 Proc_CO2Sensor::Proc_CO2Sensor(Scheduler &manager, ProcPriority pr, unsigned int period, int iterations)
   :  Process(manager, pr, period, iterations),
      avgCO2(AVERAGING_WINDOW),
-     co2(CO2_RX_PIN, CO2_TX_PIN, false, 256)
+     co2Serial(CO2_RX_PIN, CO2_TX_PIN, false, 256)
 {
 }
 
@@ -184,20 +198,34 @@ void Proc_CO2Sensor::setup()
 #endif
 
   // SW  for CO2 sensor MH-Z19
-  co2.begin(9600);
+  co2Serial.begin(9600);
 
   // dummy read to clear buffer
-  co2.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE); //request PPM CO2
+  co2Serial.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE); //request PPM CO2
 
   // Receive more data than needed, to empty  buffer (should generate  timeout)
   unsigned char response[32];
-  co2.readBytes(response, MHZ19_RESPONSE_SIZE);
+  co2Serial.readBytes(response, MHZ19_RESPONSE_SIZE);
 
   // Log BUFFER
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "MH-Z19 RESPONSE " + bytes2hex(response, sizeof(response)));
 #endif
 
+  // Test sensor functionality
+  service();
+
+  if (readError)
+  {
+    // There was a problem detecting the sensor
+    errLog(F("No valid MH-Z19 sensor - Sensor disabled"));
+
+    // Set invalid reading
+    avgCO2.push(-999);
+
+    // Disable process
+    this->disable();
+  }
 }
 
 void Proc_CO2Sensor::service()
@@ -214,10 +242,10 @@ void Proc_CO2Sensor::service()
 #endif
 
   //request PPM CO2
-  co2.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE);
+  co2Serial.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE);
 
   // Read response
-  co2.readBytes(Buffer, MHZ19_RESPONSE_SIZE);
+  co2Serial.readBytes(Buffer, MHZ19_RESPONSE_SIZE);
 
   //  PRINT BUFFER
 #ifdef DEBUG_SYSLOG
@@ -226,11 +254,12 @@ void Proc_CO2Sensor::service()
 
   if (Buffer[0] != 0xFF)
   {
-    delay(1000);
     errLog(F("CO2 Sensor - Wrong starting byte"));
 
     // empty buffer
-    co2.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
+    co2Serial.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
+
+    readError = true;
 
     return ;
   }
@@ -241,7 +270,9 @@ void Proc_CO2Sensor::service()
     errLog(F("CO2 Sensor - Wrong command"));
 
     // empty buffer
-    co2.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
+    co2Serial.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
+
+    readError = true;
 
     return ;
   }
@@ -306,6 +337,23 @@ void Proc_ParticleSensor::setup()
 
   // Receive more data than needed, to empty  buffer (should generate  timeout)
   Serial.readBytes(Buffer, sizeof(Buffer));
+
+  // Test sensor functionality
+  service();
+
+  if (readError)
+  {
+    // There was a problem detecting the sensor
+    errLog(F("No valid PMS7003 sensor - Sensor disabled"));
+
+    // Set invalid reading
+    avgPM01.push(-999);
+    avgPM2_5.push(-999);
+    avgPM10.push(-999);
+
+    // Disable process
+    this->disable();
+  }
 }
 
 void Proc_ParticleSensor::service()
@@ -360,11 +408,13 @@ void Proc_ParticleSensor::service()
     else
     {
       errLog(F("Particle sensor - Checksum wrong"));
+      readError = true;
     }
   }
   else
   {
     errLog(F("Particle sensor -  timeout"));
+    readError = true;
   }
 }
 
@@ -433,7 +483,7 @@ int Proc_ParticleSensor::extractPM10(unsigned char *thebuf)
 // VOC Sensor process (Grove - Air quality sensor v1.3)
 // -------------------------------------------------------
 
-Proc_VOCSensor::Proc_VOCSensor(Scheduler &manager, ProcPriority pr, unsigned int period, int iterations)
+Proc_VOCSensor::Proc_VOCSensor(Scheduler & manager, ProcPriority pr, unsigned int period, int iterations)
   :  Process(manager, pr, period, iterations),
      //avgVOC(AVERAGING_WINDOW)
      avgVOC(60)
@@ -473,7 +523,7 @@ float Proc_VOCSensor::getVOC()
 
 Proc_GeigerSensor *Proc_GeigerSensor::instance = nullptr;
 
-Proc_GeigerSensor::Proc_GeigerSensor(Scheduler &manager, ProcPriority pr, unsigned int period, int iterations)
+Proc_GeigerSensor::Proc_GeigerSensor(Scheduler & manager, ProcPriority pr, unsigned int period, int iterations)
   :  Process(manager, pr, period, iterations),
      avgCPM(AVERAGING_WINDOW)
 {
@@ -491,7 +541,6 @@ void Proc_GeigerSensor::setup()
   pinMode(GEIGER_INTERRUPT_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(GEIGER_INTERRUPT_PIN), onTubeEventISR, RISING);
   counts = 0;
-  avgCPM.push(10.0);
 }
 
 void Proc_GeigerSensor::service()
@@ -521,7 +570,7 @@ void Proc_GeigerSensor::service()
     // INTERVAL OK, Measure normally
     float thisCPM = (float(counts) * 60000.0 / float(interval));
 
-    // SPURIOUS MEASUREMENT GUARD - If cpm is obviously out of range, discard it 
+    // SPURIOUS MEASUREMENT GUARD - If cpm is obviously out of range, discard it
     if (thisCPM > 100000 || thisCPM < 0)
     {
       // Spurious run
@@ -547,13 +596,6 @@ void Proc_GeigerSensor::service()
   lastCountReset = millis();
   counts = 0;
 }
-
-/*
-  unsigned long Proc_GeigerSensor::getLastCPM()
-  {
-  return lastCPM;
-  }
-*/
 
 float Proc_GeigerSensor::getCPM()
 {
@@ -604,10 +646,31 @@ void Proc_MultiGasSensor::setup()
   syslog.log(LOG_DEBUG, "Proc_MultiGasSensor::setup()");
 #endif
 
-  gas.begin(0x04);//the default I2C address of the slave is 0x04
+  gas.begin(0x04); //the default I2C address of the slave is 0x04
   gas.powerOn();
   delay(1000);
-  syslog.log(LOG_INFO, "MultiGas firmware Version = " + String(gas.getVersion()));
+  unsigned char firmwareVersion = gas.getVersion();
+
+#ifdef DEBUG_SYSLOG
+  syslog.log(LOG_INFO, "MultiGas firmware Version = " + String(firmwareVersion));
+#endif
+  if (firmwareVersion != 2)
+  {
+    syslog.log(LOG_INFO, "MultiGas firmware mismatch - Sensor disabled");
+
+    // Set invalid reading
+    avgNH3.push(-999);
+    avgCO.push(-999);
+    avgNO2.push(-999);
+    avgC3H8.push(-999);
+    avgC4H10.push(-999);
+    avgCH4.push(-999);
+    avgH2.push(-999);
+    avgC2H5OH.push(-999);
+
+    // Disable process
+    this->disable();
+  }
 }
 
 void Proc_MultiGasSensor::service()
@@ -750,8 +813,8 @@ String BaseSensor::bytes2hex(unsigned char buf[], int len)
   String output;
   for (int i = 0; i < len; i++)
   {
-    sprintf(onebyte, "%02X", buf[i]);
-    output = output  + String(onebyte) + String(":");
+    sprintf(onebyte, " % 02X", buf[i]);
+    output = output  + String(onebyte) + String(": ");
   }
   return output;
 }
