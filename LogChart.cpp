@@ -1,6 +1,6 @@
 
 #include "LogChart.h"
-#include "TFT_eSPI.h"
+#include <TFT_eSPI.h>
 #include "artwork.h"
 
 // External variables

@@ -1,15 +1,15 @@
 
+#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+#include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
+#include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
+
 #include "ScreenSetup.h"
 #include "Free_Fonts.h"
 #include "GlobalDefinitions.h"
 #include "Bitmaps.h"
 #include "ArialRoundedMTBold_36.h"
 #include "artwork.h"
-
-#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
-#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
-#include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
-#include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
 
 // External variables
 extern Syslog syslog;

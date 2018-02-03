@@ -32,12 +32,11 @@
 // Call up the SPIFFS FLASH filing system this is part of the ESP Core
 #define FS_NO_GLOBALS
 #include <FS.h>
+#include <JPEGDecoder.h>          // https://github.com/Bodmer/JPEGDecoder
+#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 
 #include "AdsbExchangeClient.h"
 #include "GeoMap.h"
-
-#include <JPEGDecoder.h>          // https://github.com/Bodmer/JPEGDecoder
-#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 
 enum TextAlignment {
   LEFT, CENTER, RIGHT

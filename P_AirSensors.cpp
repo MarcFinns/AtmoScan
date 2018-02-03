@@ -12,6 +12,9 @@ extern Syslog syslog;
 extern struct ProcessContainer procPtr;
 extern struct Configuration config;
 
+extern TFT_eSPI LCD;
+
+
 // Prototypes
 void errLog(String msg);
 
@@ -27,7 +30,7 @@ void errLog(String msg);
 #define MHZ19_RESPONSE_SIZE 9
 
 // Temperature sensor definitions
-#define TEMPERATURE_ADJUSTMENT_FACTOR 1.5 // NOTE: empirical correction based on observations, TBC
+#define TEMPERATURE_ADJUSTMENT_FACTOR -1.5 // NOTE: empirical correction based on observations, TBC
 
 
 // Particle sensor PMS7003 definitions
@@ -53,6 +56,7 @@ Proc_ComboTemperatureHumiditySensor::Proc_ComboTemperatureHumiditySensor(Schedul
 
 void Proc_ComboTemperatureHumiditySensor::setup()
 {
+
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "Proc_ComboTemperatureHumiditySensor::setup()");
 #endif
@@ -72,12 +76,22 @@ void Proc_ComboTemperatureHumiditySensor::setup()
     errLog(F("Could not find a valid hdc1080 sensor - Sensor disabled"));
 
     // Set invalid reading
-    avgTemperature.push(-999);
-    avgHumidity.push(-999);
+    avgTemperature.push(0);
+    avgHumidity.push(0);
 
     // Disable process
     this->disable();
   }
+
+  // first reading
+
+  // Get temperature value
+  float temp = hdc1080.readTemperature();
+
+  // initialize average
+  avgTemperature.push(temp + TEMPERATURE_ADJUSTMENT_FACTOR);
+
+
 }
 
 void Proc_ComboTemperatureHumiditySensor::service()
@@ -86,14 +100,30 @@ void Proc_ComboTemperatureHumiditySensor::service()
   syslog.log(LOG_DEBUG, "Proc_ComboTemperatureHumiditySensor::service()");
 #endif
 
-  // Get temperature event
+  // Get temperature value
   float temp = hdc1080.readTemperature();
 
-  // Get humidity event
+  // If sensor misbehave (might happen when battery is drained), reset it and skip a reading cycle
+  // Misbehavior is define as a jump in value of more than 30% with respect to the moving average
+  if (abs(temp)  > abs(avgTemperature.mean() * 1.3 ))
+  {
+    // Log error
+    errLog("TemperatureHumiditySensor error - resetting");
+    syslog.log(LOG_ERR, "Temp reading was =" + String(temp));
+    syslog.log(LOG_ERR, "Battery voltage was =" + String(procPtr.UIManager.getVolt()));
+
+    //  Reset Sensor
+    hdc1080.begin(0x40);
+
+    // Skip cycle
+    return;
+
+  }
+  // Get humidity value
   float humidity = hdc1080.readHumidity();
 
   // averages
-  avgTemperature.push(temp - TEMPERATURE_ADJUSTMENT_FACTOR);
+  avgTemperature.push(temp + TEMPERATURE_ADJUSTMENT_FACTOR);
   avgHumidity.push(humidity);
 
 }
@@ -135,9 +165,9 @@ void Proc_ComboPressureHumiditySensor::setup()
     errLog(F("No valid BME280 sensor - Sensor disabled"));
 
     // Set invalid reading
-    avgPressure.push(-999);
-    avgTemperature.push(-999);
-    avgHumidity.push(-999);
+    avgPressure.push(0);
+    avgTemperature.push(0);
+    avgHumidity.push(0);
 
     // Disable process
     this->disable();
@@ -197,35 +227,51 @@ void Proc_CO2Sensor::setup()
   syslog.log(LOG_DEBUG, "Proc_CO2Sensor::setup()");
 #endif
 
-  // SW  for CO2 sensor MH-Z19
-  co2Serial.begin(9600);
+  int attempts = 5;
 
-  // dummy read to clear buffer
-  co2Serial.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE); //request PPM CO2
+  // Test whether sensor is readable
+  while (attempts > 0)
+  {
 
-  // Receive more data than needed, to empty  buffer (should generate  timeout)
-  unsigned char response[32];
-  co2Serial.readBytes(response, MHZ19_RESPONSE_SIZE);
+    // Initialise SoftwareSerial for CO2 sensor MH-Z19
+    co2Serial.begin(9600);
 
-  // Log BUFFER
+    // dummy read to clear buffer
+    co2Serial.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE); //request PPM CO2
+
+    // Receive more data than needed, to empty  buffer (should generate  timeout)
+    unsigned char response[32];
+    co2Serial.readBytes(response, MHZ19_RESPONSE_SIZE * 2);
+
+    // Log BUFFER
 #ifdef DEBUG_SYSLOG
-  syslog.log(LOG_DEBUG, "MH-Z19 RESPONSE " + bytes2hex(response, sizeof(response)));
+    syslog.log(LOG_DEBUG, "MH-Z19 RESPONSE " + bytes2hex(response, sizeof(response)));
 #endif
 
-  // Test sensor functionality
-  service();
+    delay (500);
 
-  if (readError)
-  {
-    // There was a problem detecting the sensor
-    errLog(F("No valid MH-Z19 sensor - Sensor disabled"));
+    // Test sensor functionality
+    service();
 
-    // Set invalid reading
-    avgCO2.push(-999);
+    // If data is read correctly, we are done
+    if (!readError)
+      return;
 
-    // Disable process
-    this->disable();
+    // Wait a bit and retry
+    delay(1000);
+
+    attempts --;
   }
+
+  // Attempts exausted without a successful read
+  // There was a problem detecting the sensor
+  errLog(F("No valid MH-Z19 sensor - Sensor disabled"));
+
+  // Set invalid reading
+  avgCO2.push(0);
+
+  // Disable process
+  this->disable();
 }
 
 void Proc_CO2Sensor::service()
@@ -288,6 +334,7 @@ void Proc_CO2Sensor::service()
 
   // Average
   avgCO2.push(co2);
+
 }
 
 float Proc_CO2Sensor::getCO2()
@@ -347,9 +394,9 @@ void Proc_ParticleSensor::setup()
     errLog(F("No valid PMS7003 sensor - Sensor disabled"));
 
     // Set invalid reading
-    avgPM01.push(-999);
-    avgPM2_5.push(-999);
-    avgPM10.push(-999);
+    avgPM01.push(0);
+    avgPM2_5.push(0);
+    avgPM10.push(0);
 
     // Disable process
     this->disable();
@@ -545,7 +592,6 @@ void Proc_GeigerSensor::setup()
 
 void Proc_GeigerSensor::service()
 {
-
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "Proc_GeigerSensor::service()");
 #endif
@@ -561,7 +607,7 @@ void Proc_GeigerSensor::service()
   {
 
 #ifdef DEBUG_SYSLOG
-    syslog.log(LOG_DEBUG, "Geiger: skipping this reading as interval is out of range " + String(interval));
+    syslog.log(LOG_WARNING, "Geiger: skipping this reading as interval is out of range " + String(interval));
 #endif
   }
 
@@ -575,7 +621,7 @@ void Proc_GeigerSensor::service()
     {
       // Spurious run
 #ifdef DEBUG_SYSLOG
-      syslog.log(LOG_DEBUG, "WARNING - Geiger thisCPM = " + String(thisCPM));
+      syslog.log(LOG_WARNING, "WARNING - Geiger thisCPM = " + String(thisCPM));
 #endif
     }
     else
@@ -647,6 +693,7 @@ void Proc_MultiGasSensor::setup()
 #endif
 
   gas.begin(0x04); //the default I2C address of the slave is 0x04
+
   gas.powerOn();
   delay(1000);
   unsigned char firmwareVersion = gas.getVersion();
@@ -659,14 +706,14 @@ void Proc_MultiGasSensor::setup()
     syslog.log(LOG_INFO, "MultiGas firmware mismatch - Sensor disabled");
 
     // Set invalid reading
-    avgNH3.push(-999);
-    avgCO.push(-999);
-    avgNO2.push(-999);
-    avgC3H8.push(-999);
-    avgC4H10.push(-999);
-    avgCH4.push(-999);
-    avgH2.push(-999);
-    avgC2H5OH.push(-999);
+    avgNH3.push(0);
+    avgCO.push(0);
+    avgNO2.push(0);
+    avgC3H8.push(0);
+    avgC4H10.push(0);
+    avgCH4.push(0);
+    avgH2.push(0);
+    avgC2H5OH.push(0);
 
     // Disable process
     this->disable();

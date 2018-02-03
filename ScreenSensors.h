@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Screen.h"
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+
+#include "Screen.h"
 
 // Screen Handler definition
 class ScreenSensors: public Screen

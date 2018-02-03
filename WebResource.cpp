@@ -18,9 +18,10 @@
   See more at http://blog.squix.ch
 */
 
-#include "WebResource.h"
 #include <FS.h>
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+
+#include "WebResource.h"
 
 // External variables
 extern Syslog syslog;
@@ -38,20 +39,18 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
 {
 
   // Download only if file is not there yet
-  if (SPIFFS.exists(filename) == true)
+  if (SPIFFS.exists(filename))
   {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
     syslog.logf(LOG_DEBUG, "File already exists in SPIFFS. Skipping download of %s\n", filename.c_str());
 #endif
     return;
   }
-  else
-  {
-    syslog.logf(LOG_INFO, "File does not exist in SPIFFS. Downloading %s and saving as %s\n", url.c_str(), filename.c_str());
-  }
+
+  syslog.logf(LOG_INFO, "File does not exist in SPIFFS. Downloading %s and saving as %s\n", url.c_str(), filename.c_str());
 
   //---------------------
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, F("[HTTP] begin...\n"));
 #endif
 
@@ -60,7 +59,7 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
   // configure server and url
   http.begin(url);
 
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, F("[HTTP] GET..."));
 #endif
 
@@ -71,14 +70,14 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
     fs::File f = SPIFFS.open(filename, "w+");
     if (!f)
     {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
       syslog.log(LOG_DEBUG, F("file open failed"));
 #endif
       return;
     }
     // HTTP header has been sent and Server response header has been handled
 
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
     syslog.logf(LOG_DEBUG, "[HTTP] GET... code: %d\n", httpCode);
 #endif
 
@@ -106,7 +105,7 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
           // read up to 128 byte
           int c = stream->readBytes(buff, ((size > sizeof(buff)) ? sizeof(buff) : size));
 
-          // write it to 
+          // write it to
           f.write(buff, c);
 
           if (len > 0) {
@@ -118,14 +117,14 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
         delay(1);
       }
 
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
       syslog.log(LOG_DEBUG, "[HTTP] connection closed or file end.");
 #endif
     }
     f.close();
   } else
   {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
     syslog.logf(LOG_DEBUG, "[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
 #endif
   }
@@ -136,14 +135,14 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
 /*
   HTTPClient http;
 
-  #ifdef DEBUG_SYSLOG 
+  #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, F("[HTTP] begin...\n"));
   #endif
 
   // configure server and url
   http.begin(url);
 
-  #ifdef DEBUG_SYSLOG 
+  #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, F("[HTTP] GET..."));
   #endif
   // start connection and send HTTP header
@@ -162,14 +161,14 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
     if (!f)
     {
       syslog.log(LOG_DEBUG, F("STEP 5"));
-  #ifdef DEBUG_SYSLOG 
+  #ifdef DEBUG_SYSLOG
       syslog.log(LOG_DEBUG, F("file open failed"));
   #endif
       return;
     }
     // HTTP header has been send and Server response header has been handled
 
-  #ifdef DEBUG_SYSLOG 
+  #ifdef DEBUG_SYSLOG
     syslog.logf(LOG_DEBUG, "[HTTP] GET... code: %d\n", httpCode);
   #endif
 
@@ -195,7 +194,7 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
           // read up to 128 byte
           int c = stream->readBytes(buff, ((size > sizeof(buff)) ? sizeof(buff) : size));
 
-          // write it to 
+          // write it to
           f.write(buff, c);
 
           if (len > 0) {
@@ -206,7 +205,7 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
         delay(1);
       }
 
-  #ifdef DEBUG_SYSLOG 
+  #ifdef DEBUG_SYSLOG
       syslog.log(LOG_DEBUG, "[HTTP] connection closed or file end.");
   #endif
 
@@ -214,7 +213,7 @@ void WebResource::downloadFile(String url, String filename, ProgressCallback pro
     f.close();
   } else {
 
-  #ifdef DEBUG_SYSLOG 
+  #ifdef DEBUG_SYSLOG
     syslog.logf(LOG_DEBUG, "[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
   #endif
   }

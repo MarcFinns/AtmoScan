@@ -1,13 +1,13 @@
 
-#include "ScreenGeiger.h"
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+
+#include "ScreenGeiger.h"
 #include "Free_Fonts.h"
 #include "ArialRoundedMTBold_14.h"
 #include "GlobalDefinitions.h"
 #include "LogChart.h"
 #include "AnalogMeter.h"
-
 
 // External variables
 extern Syslog syslog;

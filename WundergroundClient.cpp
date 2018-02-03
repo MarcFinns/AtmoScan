@@ -25,10 +25,10 @@
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-#include <Arduino.h>
-#include "WundergroundClient.h"
-
+//#include <Arduino.h>
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+
+#include "WundergroundClient.h"
 
 // External variables
 extern Syslog syslog;

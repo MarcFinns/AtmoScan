@@ -1,13 +1,13 @@
-#include "ScreenStatus.h"
 
+#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+
+#include "ScreenStatus.h"
 #include "ESP8266WiFi.h"
 #include "GlobalDefinitions.h"
 #include "P_AirSensors.h"
 #include "Free_Fonts.h"
 #include "artwork.h"
-
-#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
-#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 
 // External variables
 extern Syslog syslog;
@@ -114,7 +114,7 @@ void ScreenStatus::update()
   LCD.drawString(String(ESP.getFreeHeap()) + F(" Bytes    "), xpos, ypos, GFXFF);
 
   ypos +=  lineSpacing;
-  LCD.drawString(String(procPtr.UIManager.getSoC(), 0) + F("% "), xpos, ypos, GFXFF);
+  LCD.drawString(String(procPtr.UIManager.getSoC(), 0) + F("%    "), xpos, ypos, GFXFF);
 
   ypos +=  lineSpacing;
   LCD.drawString(String(procPtr.UIManager.getVolt()) + F(" V    "), xpos, ypos, GFXFF);
@@ -129,7 +129,7 @@ void ScreenStatus::update()
   LCD.drawString(String(WiFi.SSID()), xpos, ypos, GFXFF);
 
   ypos +=  lineSpacing;
-  LCD.drawString(String(WiFi.localIP().toString()), xpos, ypos, GFXFF);
+  LCD.drawString(String(WiFi.localIP().toString() + F("          ")), xpos, ypos, GFXFF);
 
   ypos +=  lineSpacing;
   LCD.drawString(String(config.syslog_server), xpos, ypos, GFXFF);

@@ -1,12 +1,12 @@
-#include "ScreenSensors.h"
 
+#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+
+#include "ScreenSensors.h"
 #include "GlobalDefinitions.h"
 #include "P_AirSensors.h"
 #include "Free_Fonts.h"
 #include "Artwork.h"
-
-#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
-#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 
 
 // External variables
@@ -17,7 +17,7 @@ extern struct ProcessContainer procPtr;
 
 void ScreenSensors::activate()
 {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, "ScreenSensors::activate()");
 #endif
 
@@ -78,7 +78,7 @@ void ScreenSensors::activate()
 
 void ScreenSensors::update()
 {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("ScreenSensors::update()"));
 #endif
 
@@ -94,60 +94,99 @@ void ScreenSensors::update()
   int ypos = 75;
 
   // TEMPERATURE
-  printWithTrend(lastTemperatureColor, lastTemperature, procPtr.ComboTemperatureHumiditySensor.getTemperature(), F(" C  "), 1 , xpos, ypos);
+  if (procPtr.ComboTemperatureHumiditySensor.isEnabled())
+    printWithTrend(lastTemperatureColor, lastTemperature, procPtr.ComboTemperatureHumiditySensor.getTemperature(), F(" C  "), 1 , xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   // HUMIDITY
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastHumidityColor, lastHumidity, procPtr.ComboTemperatureHumiditySensor.getHumidity() , F(" % "), 1, xpos, ypos);
+  if (procPtr.ComboTemperatureHumiditySensor.isEnabled())
+    printWithTrend(lastHumidityColor, lastHumidity, procPtr.ComboTemperatureHumiditySensor.getHumidity() , F(" % "), 1, xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   // PRESSURE
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastPressureColor, lastPressure, procPtr.ComboPressureHumiditySensor.getPressure() , F(" hPa "), 1, xpos, ypos);
+  if (procPtr.ComboPressureHumiditySensor.isEnabled())
+    printWithTrend(lastPressureColor, lastPressure, procPtr.ComboPressureHumiditySensor.getPressure() , F(" hPa "), 1, xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   ypos +=  LCD.fontHeight(GFXFF);
   ui.drawSeparator(ypos);
   ypos +=  LCD.fontHeight(GFXFF) / 2;
 
   // CO2
-  printWithTrend(lastCO2Color, lastCO2, procPtr.CO2Sensor.getCO2() , F(" ppm  "), 0,  xpos, ypos);
+  if (procPtr.CO2Sensor.isEnabled())
+    printWithTrend(lastCO2Color, lastCO2, procPtr.CO2Sensor.getCO2() , F(" ppm     "), 0,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   // CO
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastCOColor, lastCO , procPtr.MultiGasSensor.getCO() , F(" ppm   "), 2,  xpos, ypos);
+  if (procPtr.MultiGasSensor.isEnabled())
+    printWithTrend(lastCOColor, lastCO , procPtr.MultiGasSensor.getCO() , F(" ppm   "), 2,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   // NO2
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastNO2Color, lastNO2 , procPtr.MultiGasSensor.getNO2() , F(" ppm  "), 2,  xpos, ypos);
+  if (procPtr.MultiGasSensor.isEnabled())
+    printWithTrend(lastNO2Color, lastNO2 , procPtr.MultiGasSensor.getNO2() , F(" ppm  "), 2,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   // VOC
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastVOCColor, lastVOC , procPtr.VOCSensor.getVOC() , F("   "), 0,  xpos, ypos);
+  if (procPtr.VOCSensor.isEnabled())
+    printWithTrend(lastVOCColor, lastVOC , procPtr.VOCSensor.getVOC() , F("         "), 0,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
+
 
   ypos +=  LCD.fontHeight(GFXFF);
   ui.drawSeparator(ypos);
   ypos +=  LCD.fontHeight(GFXFF) / 2;
 
   // PM01
-  printWithTrend(lastPM01Color, lastPM01 , procPtr.ParticleSensor.getPM01(), F(" ug/m3   "), 0,  xpos, ypos);
+  if (procPtr.ParticleSensor.isEnabled())
+    printWithTrend(lastPM01Color, lastPM01 , procPtr.ParticleSensor.getPM01(), F(" ug/m3   "), 0,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   // PM25
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastPM2_5Color, lastPM2_5 , procPtr.ParticleSensor.getPM2_5() , F(" ug/m3   "), 0,  xpos, ypos);
+  if (procPtr.ParticleSensor.isEnabled())
+    printWithTrend(lastPM2_5Color, lastPM2_5 , procPtr.ParticleSensor.getPM2_5() , F(" ug/m3   "), 0,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   // PM10
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastPM10Color, lastPM10 , procPtr.ParticleSensor.getPM10() , F(" ug/m3   "), 0,  xpos, ypos);
+  if (procPtr.ParticleSensor.isEnabled())
+    printWithTrend(lastPM10Color, lastPM10 , procPtr.ParticleSensor.getPM10() , F(" ug/m3   "), 0,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
 
   ypos +=  LCD.fontHeight(GFXFF);
   ui.drawSeparator(ypos);
   ypos +=  LCD.fontHeight(GFXFF) / 2;
 
   // CPM
-  printWithTrend(lastCPMColor, lastCPM , procPtr.GeigerSensor.getCPM() , F(" Counts        "), 0,  xpos, ypos);
+  if (procPtr.GeigerSensor.isEnabled())
+    printWithTrend(lastCPMColor, lastCPM , procPtr.GeigerSensor.getCPM() , F(" Counts        "), 0,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
+
 
   // RADIATION
   ypos +=  LCD.fontHeight(GFXFF);
-  printWithTrend(lastRadiationColor, lastRadiation , procPtr.GeigerSensor.getRadiation() , F(" uSv/h     "), 2,  xpos, ypos);
+  if (procPtr.GeigerSensor.isEnabled())
+    printWithTrend(lastRadiationColor, lastRadiation , procPtr.GeigerSensor.getRadiation() , F(" uSv/h     "), 2,  xpos, ypos);
+  else
+    LCD.drawString(F("------                   "), xpos, ypos, GFXFF);
+
 }
 
 
@@ -176,7 +215,7 @@ void ScreenSensors::printWithTrend(int &lastColor, float &lastValue, float newVa
 
 void ScreenSensors::deactivate()
 {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("ScreenSensors::deactivate()"));
 #endif
 }

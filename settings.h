@@ -27,11 +27,11 @@
 
 // Needed for loading the map. If you want to be save better get your own key here:
 // https://developer.mapquest.com/plan_purchase/steps/business_edition/business_edition_free/register
-#define MAP_QUEST_API_KEY "<-- your API key goes here -->"
+#define MAP_QUEST_API_KEY "7IbGOnKaynIWUj9Qhd5lGWxAV7UQc9Uz"
 
 // Need for loading map by google static map api. If you want to be save better create one here
 // https://developers.google.com/maps/documentation/static-maps/get-api-key?hl=de
-#define GOOGLE_API_KEY "<-- your API key goes here -->"
+#define GOOGLE_API_KEY "AIzaSyCOERMOCjVexESL7bV8ik4fhNSQZBD8Dlk"
 
 #define GFXFONT 1
 

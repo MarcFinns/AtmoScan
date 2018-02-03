@@ -1,12 +1,13 @@
+
+#include <RingBufCPP.h>           //https://github.com/wizard97/Embedded_RingBuf_CPP
+#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+
 #include "ScreenErrLog.h"
 #include "ESP8266WiFi.h"
 #include "GlobalDefinitions.h"
 #include "Free_Fonts.h"
 #include "artwork.h"
-
-#include <RingBufCPP.h>           //https://github.com/wizard97/Embedded_RingBuf_CPP
-#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
-#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 
 // External variables
 extern Syslog syslog;
@@ -60,7 +61,7 @@ void ScreenErrLog::update()
 void ScreenErrLog::deactivate()
 {
 #ifdef DEBUG_SYSLOG
-  syslog.log(LOG_INFO, F("ScreenErrLog::deactivate())");
+  syslog.log(LOG_INFO, F("ScreenErrLog::deactivate()"));
 #endif
 }
 

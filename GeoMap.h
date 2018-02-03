@@ -23,7 +23,6 @@
   See more at https://blog.squix.org
 */
 #pragma once
-//#include <Arduino.h>
 #define FS_NO_GLOBALS
 #include <FS.h>
 #include <ESP8266WiFi.h>

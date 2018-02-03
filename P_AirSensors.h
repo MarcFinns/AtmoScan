@@ -2,7 +2,7 @@
 
 #include <Average.h>                // https://github.com/MajenkoLibraries/Average
 #include <ProcessScheduler.h>       // https://github.com/wizard97/ArduinoProcessScheduler
-#include <ClosedCube_HDC1080.h>     // https://github.com/closedcube/ClosedCube_HDC1080_Arduino
+#include <ClosedCube_HDC1080.h>     // https://github.com/MarcFinns/ClosedCube_HDC1080_Arduino
 #include <Adafruit_BME280.h>        // https://github.com/adafruit/Adafruit_BME280_Library
 #include <SoftwareSerial.h>         // https://github.com/plerup/espsoftwareserial
 

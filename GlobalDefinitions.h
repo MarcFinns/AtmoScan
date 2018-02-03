@@ -16,11 +16,11 @@
 // #define DEBUG_SYSLOG
 
 // Used to turn on SOME log over serial
-// WARNING - this was used during development but can't be used in the fulluy assemled system, as serial port is used for a sensor
+// WARNING - this was used during development but can't be used in the fully assembled system, as serial port is used for a sensor
 // #define DEBUG_SERIAL
 
 // Firmware revision
-#define ATMOSCAN_VERSION "v1.2.3"
+#define ATMOSCAN_VERSION "v1.3.0"
 
 // This system name
 #define APP_NAME "ATMOSCAN"

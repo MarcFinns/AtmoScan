@@ -10,16 +10,18 @@
 // MQTT_SOCKET_TIMEOUT: socket timeout interval in Seconds
 #define MQTT_SOCKET_TIMEOUT 7
 
-#include "P_MQTT.h"
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
-#include "P_AirSensors.h"
-#include "GlobalDefinitions.h"
-
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 #include <PubSubClient.h>         //https://github.com/knolleary/pubsubclient
 #include <NtpClientLib.h>         // https://github.com/gmag11/NtpClient
 #include <ArduinoJson.h>          //https://github.com/bblanchon/ArduinoJson
+
+#include "P_MQTT.h"
+#include "P_AirSensors.h"
+#include "GlobalDefinitions.h"
+
+
 // External variables
 extern struct ProcessContainer procPtr;
 extern struct Configuration config;
@@ -70,6 +72,9 @@ void Proc_MQTTUpdate::service()
 #ifdef DEBUG_SYSLOG
     syslog.log(LOG_DEBUG, "Connect to MQTT server...");
 #endif
+
+    // Make ongoing MQTT visible
+    procPtr.UIManager.communicationsFlag(true);
 
     bool isConnected = mqttReconnect();
 
@@ -178,12 +183,16 @@ void Proc_MQTTUpdate::service()
             }
             else
             {
-              // TEMP log zzzzz
+              // TEMP log 
               syslog.log(LOG_DEBUG, "MQTT not connected, so no need to disconnect");
             }
       */
     }
   }
+
+  // Reset visual communications flag
+  procPtr.UIManager.communicationsFlag(false);
+
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, "END Proc_MQTTUpdate::service()");
 #endif

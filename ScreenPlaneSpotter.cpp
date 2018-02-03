@@ -1,13 +1,13 @@
 
-#include "ScreenplaneSpotter.h"
 #include <ESP8266WiFi.h>
+#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+
+#include "ScreenplaneSpotter.h"
 #include "Free_Fonts.h"
 #include "ArialRoundedMTBold_14.h"
 #include "GlobalDefinitions.h"
 #include "artwork.h"
-
-#include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
-#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 
 // External variables
 extern Syslog syslog;
@@ -19,6 +19,7 @@ extern GfxUi ui;
 // Prototypes
 void setTurbo(bool setTurbo);
 bool isTurbo();
+void errLog(String msg);
 
 const String QUERY_STRING = "fAltL=1500&trFmt=sa";
 
@@ -41,9 +42,6 @@ void ScreenPlaneSpotter::activate()
     isInitialised = false;
     return;
   }
-
-  // Create GeoMap object
-  //geoMap = new GeoMap(MapProvider::Google, GOOGLE_API_KEY, MAP_WIDTH, MAP_HEIGHT);
 
   // Set center of the map by using system coordinates
   mapCenter.lat = procPtr.GeoLocation.getLatitude();
@@ -74,8 +72,6 @@ void ScreenPlaneSpotter::activate()
     geoMap.downloadMap();
   }
 
-  // planeSpotter = new PlaneSpotter(&LCD, &geoMap);
-
   // NOTE: clipping on top by 15 pixels, not to dirty the upper bar...
   northWestBound = geoMap.convertToCoordinates({0, 15});
   southEastBound = geoMap.convertToCoordinates({MAP_WIDTH, MAP_HEIGHT - 15});
@@ -94,83 +90,81 @@ void ScreenPlaneSpotter::update()
 
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("ScreenPlaneSpotter::update()"));
-
   long startMillis = millis();
 #endif
 
   // Only works connected!!
   if ( !config.connected || !isInitialised)
-  return;
+    return;
 
   //local variable for test
   AdsbExchangeClient * adsbClient;
 
 #ifdef DEBUG_SYSLOG
-  syslog.log(LOG_DEBUG, "1- START UPDATING ADSB = " + String(ESP.getFreeHeap()) + " bytes");
+  syslog.log(LOG_DEBUG, "1 - START UPDATING ADSB = " + String(ESP.getFreeHeap()) + " bytes");
 #endif
 
-    adsbClient = new AdsbExchangeClient();
+  adsbClient = new AdsbExchangeClient();
 
 #ifdef DEBUG_SYSLOG
-    syslog.log(LOG_DEBUG, "2 - AFTER INSTANCIATING ADSBCLIENT = " + String(ESP.getFreeHeap()) + " bytes");
+  syslog.log(LOG_DEBUG, "2 - AFTER INSTANCIATING ADSBCLIENT = " + String(ESP.getFreeHeap()) + " bytes");
 #endif
 
-    adsbClient->updateVisibleAircraft(QUERY_STRING +
-                                      "&lat=" +
-                                      String(mapCenter.lat, 6) +
-                                      "&lng=" + String(mapCenter.lon, 6) +
-                                      "&fNBnd=" + String(northWestBound.lat, 9) +
-                                      "&fWBnd=" +
-                                      String(northWestBound.lon, 9) +
-                                      "&fSBnd=" +
-                                      String(southEastBound.lat, 9) +
-                                      "&fEBnd=" +
-                                      String(southEastBound.lon, 9));
+  adsbClient->updateVisibleAircraft(QUERY_STRING +
+                                    "&lat=" +
+                                    String(mapCenter.lat, 6) +
+                                    "&lng=" + String(mapCenter.lon, 6) +
+                                    "&fNBnd=" + String(northWestBound.lat, 9) +
+                                    "&fWBnd=" + String(northWestBound.lon, 9) +
+                                    "&fSBnd=" + String(southEastBound.lat, 9) +
+                                    "&fEBnd=" + String(southEastBound.lon, 9));
+
 
 #ifdef DEBUG_SYSLOG
-    syslog.log(LOG_DEBUG, "3 - AFTER CALL TO ADSBCLIENT = " + String(ESP.getFreeHeap()) + " bytes");
+  syslog.log(LOG_DEBUG, "3 - AFTER CALL TO ADSBCLIENT = " + String(ESP.getFreeHeap()) + " bytes");
 #endif
 
-    Aircraft closestAircraft = adsbClient->getClosestAircraft(mapCenter.lat, mapCenter.lon);
+  Aircraft closestAircraft = adsbClient->getClosestAircraft(mapCenter.lat, mapCenter.lon);
 
-    // Before refreshing display, check if a userEvent is pending and skip in case
-    if ( !procPtr.UIManager.eventPending())
+  // Before refreshing display, check if a userEvent is pending and skip in case
+  if ( !procPtr.UIManager.eventPending())
+  {
+
+    // Draw map
+    ui.drawJpeg(geoMap.getMapName(), 0, TOP_BAR_HEIGHT);
+
+    // Get aircrafts data
+    for (int i = 0; i < adsbClient->getNumberOfAircrafts(); i++)
     {
-      // Draw map
-      ui.drawJpeg(geoMap.getMapName(), 0, TOP_BAR_HEIGHT);
+      Aircraft aircraft = adsbClient->getAircraft(i);
+      AircraftHistory history = adsbClient->getAircraftHistory(i);
+      planeSpotter.drawAircraftHistory(aircraft, history);
+      planeSpotter.drawPlane(aircraft, aircraft.call == closestAircraft.call);
+    }
 
-      // Get aircrafts data
-      for (int i = 0; i < adsbClient->getNumberOfAircrafts(); i++)
-      {
-        Aircraft aircraft = adsbClient->getAircraft(i);
-        AircraftHistory history = adsbClient->getAircraftHistory(i);
-        planeSpotter.drawAircraftHistory(aircraft, history);
-        planeSpotter.drawPlane(aircraft, aircraft.call == closestAircraft.call);
-      }
-
-      // Draf info of closest aircraft
-      if (adsbClient->getNumberOfAircrafts())
-      {
-        // YES - print infobox of the closes
-        planeSpotter.drawInfoBox(closestAircraft);
-      }
-      else
-      {
-        // NO - erase infobox
-        LCD.fillRect(0, geoMap.getMapHeight() + TOP_BAR_HEIGHT, LCD.width(), LCD.height() - geoMap.getMapHeight() - TOP_BAR_HEIGHT, TFT_BLACK);
-      }
-
-      // Draw center of map
-      CoordinatesPixel p = geoMap.convertToPixel(mapCenter);
-      LCD.fillCircle(p.x, p.y, 2, TFT_BLUE);
-
+    // Draf info of closest aircraft
+    if (adsbClient->getNumberOfAircrafts())
+    {
+      // YES - print infobox of the closes
+      planeSpotter.drawInfoBox(closestAircraft);
     }
     else
     {
-#ifdef DEBUG_SYSLOG
-      syslog.log(LOG_DEBUG, " USER EVENT detected, aborting rendering after " + String(millis() - startMillis));
-#endif
+      // NO - erase infobox
+      LCD.fillRect(0, geoMap.getMapHeight() + TOP_BAR_HEIGHT, LCD.width(), LCD.height() - geoMap.getMapHeight() - TOP_BAR_HEIGHT, TFT_BLACK);
     }
+
+    // Draw center of map
+    CoordinatesPixel p = geoMap.convertToPixel(mapCenter);
+    LCD.fillCircle(p.x, p.y, 2, TFT_BLUE);
+
+  }
+  else
+  {
+#ifdef DEBUG_SYSLOG
+    syslog.log(LOG_DEBUG, " USER EVENT detected, aborting rendering after " + String(millis() - startMillis));
+#endif
+  }
 
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "4 - AFTER DRAWING = " + String(ESP.getFreeHeap()) + " bytes");

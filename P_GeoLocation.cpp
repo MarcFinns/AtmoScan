@@ -11,6 +11,7 @@
 // External variables
 extern Syslog syslog;
 extern struct Configuration config;
+extern struct ProcessContainer procPtr;
 
 // Prototypes
 void errLog(String msg);
@@ -28,9 +29,14 @@ void Proc_GeoLocation::service()
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, "Geolocation Service");
 #endif
+
   // Service only if connected
   if (config.connected)
   {
+
+    // Make ongoing communications visible
+    procPtr.UIManager.communicationsFlag(true);
+
     // invalidate current location
     valid = false;
 
@@ -49,6 +55,10 @@ void Proc_GeoLocation::service()
     // Acquire coordinate
     if (!geolocate.acquire())
     {
+
+      // Clear visible communications flag
+      procPtr.UIManager.communicationsFlag(false);
+
       errLog(F("Geolocation Failure step 1"));
 
       // in case of failure, remember it
@@ -77,6 +87,9 @@ void Proc_GeoLocation::service()
 
     if (!timezone.acquire(latitude, longitude))
     {
+      // Clear visible communications flag
+      procPtr.UIManager.communicationsFlag(false);
+
       errLog(F("Geolocation Failure step 2"));
 
       // in case of failure, remember it
@@ -104,6 +117,9 @@ void Proc_GeoLocation::service()
 
     if (!geocode.acquire(latitude, longitude))
     {
+      // Clear visible communications flag
+      procPtr.UIManager.communicationsFlag(false);
+
       errLog(F("Geolocation Failure step 3"));
 
       // in case of failure, remember it
@@ -203,6 +219,9 @@ void Proc_GeoLocation::service()
     // syslog.log(LOG_DEBUG, "country = " + country);
     syslog.log(LOG_DEBUG, "countryCode = " + countryCode);
 #endif
+
+    // Clear visible communications flag
+    procPtr.UIManager.communicationsFlag(false);
 
   }
   else

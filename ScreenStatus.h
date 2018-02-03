@@ -2,7 +2,6 @@
 
 #include "Screen.h"
 
-
 // Screen Handler definition
 class ScreenStatus: public Screen
 {

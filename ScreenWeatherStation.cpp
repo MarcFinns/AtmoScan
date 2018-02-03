@@ -33,6 +33,9 @@
 */
 
 
+#include <syslog.h>               // https://github.com/arcao/ESP8266_Syslog
+#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
+
 #include "ScreenWeatherStation.h"
 // check settings.h for adapting to your needs
 #include "ScreenWeatherStationSettings.h"
@@ -46,9 +49,6 @@
 
 // Download helper
 #include "WebResource.h"
-
-#include <syslog.h>               // https://github.com/arcao/ESP8266_Syslog
-#include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 
 // External variables
 extern Syslog syslog;
@@ -512,7 +512,7 @@ void ScreenWeatherStation::drawForecastDetail(uint16_t x, uint16_t y, uint8_t da
 
   LCD.setTextColor(TFT_WHITE, TFT_BLACK);
   LCD.setTextPadding(LCD.textWidth("-88   -88"));
-  LCD.drawString(config.wunderground->getForecastHighTemp(dayIndex) + "   " + config.wunderground->getForecastLowTemp(dayIndex), x + 25, y + 14);
+  LCD.drawString(config.wunderground->getForecastLowTemp(dayIndex) + "   " + config.wunderground->getForecastHighTemp(dayIndex), x + 25, y + 14);
 
   String weatherIcon = getMeteoconIcon(config.wunderground->getForecastIcon(dayIndex));
 

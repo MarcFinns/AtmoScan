@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Arduino.h"
 #include <RingBufCPP.h> //https://github.com/wizard97/Embedded_RingBuf_CPP
 
 #define TFT_GREY 0x5AEB

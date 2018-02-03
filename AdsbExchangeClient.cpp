@@ -67,6 +67,7 @@ void AdsbExchangeClient::updateVisibleAircraft(String searchQuery)
     retryCounter++;
     if (retryCounter > 10)
     {
+      errLog(F("ADSBexchange - no data available"));
       return;
     }
   }

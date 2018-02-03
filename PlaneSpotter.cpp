@@ -24,30 +24,21 @@
 
 
 */
+
+#include <SPI.h>
+
 // Go to settings to change important parameters
 #include "ScreenPlaneSpotterSettings.h"
-
 #include "PlaneSpotter.h"
 #include "artwork.h"
-#include <SPI.h>
+
 
 PlaneSpotter::PlaneSpotter(TFT_eSPI* tft, GeoMap* geoMap) {
   tft_ = tft;
   geoMap_ = geoMap;
 
 }
-/*
-  void PlaneSpotter::copyProgmemToSpiffs(const uint8_t *data, unsigned int length, String filename) {
-  fs::File f = SPIFFS.open(filename, "w+");
-  uint8_t c;
-  for (int i = 0; i < length; i++) {
-  c = pgm_read_byte(data + i);
-  f.write(c);
-  }
-  f.close();
-  }
 
-*/
 
 void PlaneSpotter::drawAircraftHistory(Aircraft aircraft, AircraftHistory history)
 {
@@ -134,8 +125,6 @@ void PlaneSpotter::drawInfoBox(Aircraft closestAircraft)
 
   // Clean infobox's lower lines
   tft_->fillRect(0, geoMap_->getMapHeight() + TOP_BAR_HEIGHT, tft_->width(), tft_->height() - (geoMap_->getMapHeight() + TOP_BAR_HEIGHT), TFT_BLACK);
-  // tft_->fillRect(0, tft_->height() - 20, tft_->width(), 20, TFT_BLACK);
-
 
   if (closestAircraft.call != "")
   {

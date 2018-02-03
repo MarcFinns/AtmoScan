@@ -25,7 +25,7 @@
 
 // JPEG decoder library
 #include <TFT_eSPI.h>
-#include <JPEGDecoder.h>
+#include <JPEGDecoder.h> // https://github.com/Bodmer/JPEGDecoder
 
 #ifndef _GFX_UI_H
 #define _GFX_UI_H
@@ -51,7 +51,8 @@ class GfxUi
 
     // Draw from filesystem
     void drawJpeg(String filename, int xpos, int ypos);
-    void renderJPEG(int32_t xpos, int32_t ypos);
+    // void renderJPEG(int32_t xpos, int32_t ypos);
+    void renderJPEG(int xpos, int ypos);
 
     // Additions
     int rightOffset(String text, String sub);

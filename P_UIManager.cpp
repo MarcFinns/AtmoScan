@@ -1,18 +1,18 @@
 
-#include "P_UIManager.h"
-#include "ESP8266WiFi.h"
-#include "GlobalDefinitions.h"
-#include "Free_Fonts.h"
-#include "ArialRoundedMTBold_14.h"
-#include "ArialRoundedMTBold_36.h"
-#include "ScreenLowbatt.h"
-
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 #include <NtpClientLib.h>         // https://github.com/gmag11/NtpClient
 #include <MAX17043.h>             // https://github.com/lucadentella/ArduinoLib_MAX17043
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 
-#
+
+#include "P_UIManager.h"
+#include "ESP8266WiFi.h"
+#include "GlobalDefinitions.h"
+#include "Free_Fonts.h"
+#include "Bitmaps.h"
+#include "ArialRoundedMTBold_14.h"
+#include "ArialRoundedMTBold_36.h"
+#include "ScreenLowbatt.h"
 
 // External variables
 extern Syslog syslog;
@@ -182,6 +182,11 @@ void Proc_UIManager::service()
       // If screen was off, just turn it on and no further actions no matter what the event is
       if (!isDisplayOn)
       {
+        // ASoft reset the screen, just in case
+        LCD.init();
+
+        delay(100);
+
         displayOn();
       }
 
@@ -648,15 +653,15 @@ void Proc_UIManager::drawBar(bool forceDraw)
 
 void Proc_UIManager::drawWifiGauge(int topX, int topY, int dBm, bool forceDraw)
 {
-
   // Draw it only if it changed
   if (dBm != topBar.dBm || forceDraw)
   {
     // Draw it
     int spacing = 5;
     int thick = 4;
-    int radius = 3;
+    int radius = 2;
     int count = 5;
+    int width = 14;
 
     int quality, bars;
 
@@ -671,7 +676,7 @@ void Proc_UIManager::drawWifiGauge(int topX, int topY, int dBm, bool forceDraw)
     // If previous was 31 (disconnected) erase the whole icon and start over
     if (topBar.dBm == 31)
     {
-      LCD.fillRect(topX, topY, 15, 5 * (thick + spacing), TFT_BLACK);
+      LCD.fillRect(topX, topY, width, count * (thick + spacing), TFT_BLACK);
     }
 
     if (quality == 0)
@@ -708,12 +713,12 @@ void Proc_UIManager::drawWifiGauge(int topX, int topY, int dBm, bool forceDraw)
     for (int i = 0; i < count; i++)
     {
       int color;
-      if (i  >= (5 - bars))
+      if (i  >= (count - bars))
         color = TFT_GREEN;
       else
         color = 0xEF5D; // GREY 90%
 
-      LCD.fillRoundRect(topX + i * 2, topY + i * spacing, 15 - i * 2, thick, radius, color);
+      LCD.fillRoundRect(topX + i * 2, topY + i * spacing, width - i * 2, thick, radius, color);
     }
 
     // If disconnected, red X over bars
@@ -733,6 +738,7 @@ void Proc_UIManager::drawWifiGauge(int topX, int topY, int dBm, bool forceDraw)
 
 void Proc_UIManager::drawBatteryGauge(int topX, int topY, int batLevel, int redLevel, bool forceDraw)
 {
+
   // Draw it only if it changed, unless forced
   if (batLevel != topBar.batLevel || forceDraw)
   {
@@ -906,3 +912,24 @@ bool Proc_UIManager::initGesture()
   }
   return false;
 }
+
+// Makes ongoing (potentially blocking) communications vidible
+void Proc_UIManager::communicationsFlag(bool commOngoing)
+{
+  /*
+    int color = commStatus ? TFT_RED : TFT_BLACK;
+
+    LCD.fillRoundRect(228, 50, 7, 7, 2, color);
+  */
+
+  if (commOngoing)
+  {
+    // Show cloud icon
+    ui.drawBitmap(arrowsIO, 220, 45, arrowsIOWidth, arrowsIOHeight);
+  }
+  else
+  {
+    LCD.fillRect(220, 45, arrowsIOWidth, arrowsIOHeight, TFT_BLACK);
+  }
+}
+
