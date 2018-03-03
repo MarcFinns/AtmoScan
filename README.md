@@ -1,7 +1,7 @@
 ## AtmoScan
 
 Instructable can be found [HERE](https://www.instructables.com/id/AtmoScan/).  
-Watch [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA)
+See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA)
 
 **AtmoScan** is a multisensor device that measures:
 
@@ -72,18 +72,4 @@ Mylnikov.org
 Timezonedb.com
 Wunderground.com
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
