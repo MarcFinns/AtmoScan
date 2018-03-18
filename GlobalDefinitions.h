@@ -19,8 +19,11 @@
 // WARNING - this was used during development but can't be used in the fully assembled system, as serial port is used for a sensor
 // #define DEBUG_SERIAL
 
+// Used to test board witout sensors
+#define ENABLE_SENSORS
+
 // Firmware revision
-#define ATMOSCAN_VERSION "v1.3.0"
+#define ATMOSCAN_VERSION "v1.4.0"
 
 // This system name
 #define APP_NAME "ATMOSCAN"
@@ -46,7 +49,7 @@
 #define LOWBATT_SCREEN 99
 
 // RUNTIME definitions (NOTE: ampirical)
-#define VOLT_LOW 3.2
+#define VOLT_LOW 3.0
 #define VOLT_HIGH 3.9
 
 #define AVERAGING_WINDOW 12         // NOTE: 12 * 5 sec sensor sampling rate = 1 minute
