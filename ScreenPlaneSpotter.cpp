@@ -1,3 +1,10 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 
 #include <ESP8266WiFi.h>
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog

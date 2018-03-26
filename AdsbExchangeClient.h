@@ -25,16 +25,14 @@
 
 #pragma once
 
-//#include <Arduino.h>
 #include <JsonListener.h>
 #include <JsonStreamingParser.h>  // https://github.com/squix78/json-streaming-parser
 #include "GeoMap.h"
 
 #define MAX_AIRCRAFTS 8
 #define MAX_HISTORY 20
-#define MAX_HISTORY_TEMP 40 //80
+#define MAX_HISTORY_TEMP 40 
 
-//#define MAX_AGE_MILLIS 15000
 #define min(a,b) ((a)<(b)?(a):(b))
 
 struct AircraftPosition {

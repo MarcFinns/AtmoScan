@@ -300,7 +300,7 @@ void ScreenWeatherStation::updateData()
     if (firstRun
         || !config.wunderground->isValid)
     {
-      config.wunderground->isValid = config.wunderground->updateLocation(WUNDERGRROUND_API_KEY,
+      config.wunderground->isValid = config.wunderground->updateLocation(config.wunderground_key,
                                      procPtr.GeoLocation.getLatitude(),
                                      procPtr.GeoLocation.getLongitude());
     }
@@ -312,7 +312,7 @@ void ScreenWeatherStation::updateData()
         drawProgress(40, F("Updating conditions..."));
       else
         ui.fillSegment(120, 160, 0, (int) (25 * 3.6), 24, TFT_RED);
-      config.wunderground->isValid = config.wunderground->updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, config.wunderground->getCountryName(), config.wunderground->getCity());
+      config.wunderground->isValid = config.wunderground->updateConditions(config.wunderground_key, WUNDERGRROUND_LANGUAGE, config.wunderground->getCountryName(), config.wunderground->getCity());
     }
 
     // Forecast
@@ -322,7 +322,7 @@ void ScreenWeatherStation::updateData()
         drawProgress(60, F("Updating forecast..."));
       else
         ui.fillSegment(120, 160, 0, (int) (50 * 3.6), 24, TFT_RED);
-      config.wunderground->isValid = config.wunderground->updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, config.wunderground->getCountryName(), config.wunderground->getCity());
+      config.wunderground->isValid = config.wunderground->updateForecast(config.wunderground_key, WUNDERGRROUND_LANGUAGE, config.wunderground->getCountryName(), config.wunderground->getCity());
     }
 
     // Astronomy
@@ -333,7 +333,7 @@ void ScreenWeatherStation::updateData()
         drawProgress(80, F("Updating astronomy..."));
       else
         ui.fillSegment(120, 160, 0, (int) (75 * 3.6), 24, TFT_RED);
-      config.wunderground->isValid = config.wunderground->updateAstronomy(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, config.wunderground->getCountryName(), config.wunderground->getCity());
+      config.wunderground->isValid = config.wunderground->updateAstronomy(config.wunderground_key, WUNDERGRROUND_LANGUAGE, config.wunderground->getCountryName(), config.wunderground->getCity());
     }
 
 
@@ -512,7 +512,7 @@ void ScreenWeatherStation::drawForecastDetail(uint16_t x, uint16_t y, uint8_t da
 
   LCD.setTextColor(TFT_WHITE, TFT_BLACK);
   LCD.setTextPadding(LCD.textWidth("-88   -88"));
-  LCD.drawString(config.wunderground->getForecastLowTemp(dayIndex) + "   " + config.wunderground->getForecastHighTemp(dayIndex), x + 25, y + 14);
+  LCD.drawString(config.wunderground->getForecastHighTemp(dayIndex) + "   " + config.wunderground->getForecastLowTemp(dayIndex), x + 25, y + 14);
 
   String weatherIcon = getMeteoconIcon(config.wunderground->getForecastIcon(dayIndex));
 

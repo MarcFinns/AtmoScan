@@ -1,3 +1,10 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 
 #include <NtpClientLib.h>         // https://github.com/gmag11/NtpClient
 #include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino

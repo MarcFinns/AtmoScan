@@ -1,9 +1,14 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
 
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 #include <NtpClientLib.h>         // https://github.com/gmag11/NtpClient
 #include <MAX17043.h>             // https://github.com/lucadentella/ArduinoLib_MAX17043
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
-
 
 #include "P_UIManager.h"
 #include "ESP8266WiFi.h"
@@ -88,12 +93,14 @@ void Proc_UIManager::service()
   syslog.log(LOG_INFO, F("Proc_DisplayUpdate::service()"));
 #endif
 
+#ifdef ENABLE_SENSORS
   if (!initSuccess)
   {
     errLog(F("Gesture sensor was not initialised - retrying"));
 
     initSuccess = initGesture();
   }
+#endif
 
   long starttime = millis();
 
@@ -182,12 +189,14 @@ void Proc_UIManager::service()
       // If screen was off, just turn it on and no further actions no matter what the event is
       if (!isDisplayOn)
       {
-        // ASoft reset the screen, just in case
-        LCD.init();
+        // Turn on backlight
+        displayOn();
 
+        // Wait for voltage to settle (helps prevent white screen issues at low voltages)
         delay(100);
 
-        displayOn();
+        // Soft reset the screen, just in case
+        LCD.init();
       }
 
       // Display was on, process event

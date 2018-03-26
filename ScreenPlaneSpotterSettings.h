@@ -25,22 +25,11 @@ See more at https://blog.squix.org
 
 */
 
-// Needed for loading the map. If you want to be save better get your own key here:
-// https://developer.mapquest.com/plan_purchase/steps/business_edition/business_edition_free/register
-#define MAP_QUEST_API_KEY "<-- YOUR KEY HERE -->"
-
-// Need for loading map by google static map api. If you want to be save better create one here
-// https://developers.google.com/maps/documentation/static-maps/get-api-key?hl=de
-#define GOOGLE_API_KEY "<-- YOUR KEY HERE -->"
 
 #define GFXFONT 1
 
-#define MAP_ZOOM 10 //11
-#define MAP_WIDTH 240//320
-#define MAP_HEIGHT 210 //180 // was 200
-
-////////////
+#define MAP_ZOOM 10 
+#define MAP_WIDTH 240
+#define MAP_HEIGHT 210 
 #define TOP_BAR_HEIGHT 64
-////////////
-
 

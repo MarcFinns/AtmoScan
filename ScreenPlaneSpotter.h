@@ -1,18 +1,29 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 #pragma once
 
 #include "Screen.h"
 #include "AdsbExchangeClient.h"
 #include "GeoMap.h"
 #include "PlaneSpotter.h"
+#include "GlobalDefinitions.h"
 
+
+// External variables
 extern TFT_eSPI LCD;
+extern struct Configuration config;
 
 // Screen Handler definition
 class ScreenPlaneSpotter: public Screen
 {
   public:
     // Call the Process constructor
-    ScreenPlaneSpotter(): geoMap(MapProvider::Google, GOOGLE_API_KEY, MAP_WIDTH, MAP_HEIGHT),
+    ScreenPlaneSpotter(): geoMap(MapProvider::Google, config.google_key, MAP_WIDTH, MAP_HEIGHT),
       planeSpotter(&LCD, &geoMap) {};
     virtual ~ScreenPlaneSpotter() {};
     virtual void activate();

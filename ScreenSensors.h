@@ -1,3 +1,10 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 #pragma once
 
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI

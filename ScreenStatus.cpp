@@ -1,3 +1,10 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
