@@ -1,3 +1,9 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
 
 #include <ProcessScheduler.h>     // https://github.com/wizard97/ArduinoProcessScheduler
 #include <Syslog.h>                 // https://github.com/arcao/ESP8266_Syslog

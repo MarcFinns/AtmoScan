@@ -33,7 +33,6 @@ const float UTC_OFFSET = 0;
 
 // Wunderground Settings, EDIT TO SUIT YOUR LOCATION
 const bool IS_METRIC = true; // Temperature only? Wind speed units appear to stay in mph. To do: investigate <<<<<<<<<<<<<<<<<<<<<<<<<
-const String WUNDERGRROUND_API_KEY = "937d424ec3abf8c0";
 const String WUNDERGRROUND_LANGUAGE = "EN";
 
 // Windspeed conversion, use 1 pair of #defines. To do: investigate a more convenient method <<<<<<<<<<<<<<<<<<<<<

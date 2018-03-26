@@ -1,7 +1,13 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 #pragma once
 
 #include <RingBufCPP.h>           //https://github.com/wizard97/Embedded_RingBuf_CPP
-
 #include "P_UIManager.h"
 #include "P_MQTT.h"
 #include "P_AirSensors.h"
@@ -23,7 +29,7 @@
 #define ENABLE_SENSORS
 
 // Firmware revision
-#define ATMOSCAN_VERSION "v1.4.0"
+#define ATMOSCAN_VERSION "v2.0.0"
 
 // This system name
 #define APP_NAME "ATMOSCAN"
@@ -48,7 +54,7 @@
 #define SETUP_SCREEN 0
 #define LOWBATT_SCREEN 99
 
-// RUNTIME definitions (NOTE: ampirical)
+// RUNTIME definitions (NOTE: empirical)
 #define VOLT_LOW 3.0
 #define VOLT_HIGH 3.9
 
@@ -57,7 +63,7 @@
 #define FAST_SAMPLE_PERIOD 2000     // (ms) Used for Geiger sensor 
 #define SLOW_SAMPLE_PERIOD 5000     // (ms) Used for other sensors 
 #define MQTT_UPDATE_PERIOD 60000    // (ms)
-#define GEOLOC_RETRY_PERIOD 10000   // (ms)
+#define GEOLOC_RETRY_PERIOD 60000   // (ms)
 
 // -------------------------------------------------------
 //  Global constants
@@ -65,7 +71,6 @@
 
 // NTP Server - TODO: move into configuration?
 const char PROGMEM ntpServerName[] = "pool.ntp.org";
-
 
 // -------------------------------------------------------
 //  Types
@@ -99,6 +104,12 @@ struct Configuration
   char mqtt_topic3[64];
   char mqtt_server[40];
   char syslog_server[20];
+
+  char google_key[64];
+  char wunderground_key[64];
+  char  geonames_user[32];
+  char  timezonedb_key[64];
+
   WundergroundClient *wunderground;
   bool wunderValid = false;
   bool configValid = false;

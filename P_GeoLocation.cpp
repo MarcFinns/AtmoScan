@@ -1,12 +1,21 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 
 #include "P_GeoLocation.h"
 #include "GlobalDefinitions.h"
+#include "TimeSpace.h"
+
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
 
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 #include <NtpClientLib.h>         // https://github.com/gmag11/NtpClient
-#include <TimeSpace.h>            // https://github.com/MarcFinns/TimeSpaceLib
+
 
 // External variables
 extern Syslog syslog;
@@ -59,7 +68,7 @@ void Proc_GeoLocation::service()
       // Clear visible communications flag
       procPtr.UIManager.communicationsFlag(false);
 
-      errLog(F("Geolocation Failure step 1"));
+      errLog(F("Geolocation Failure step 1 (WiFi geolocation)"));
 
       // in case of failure, remember it
       valid = false;
@@ -90,7 +99,7 @@ void Proc_GeoLocation::service()
       // Clear visible communications flag
       procPtr.UIManager.communicationsFlag(false);
 
-      errLog(F("Geolocation Failure step 2"));
+      errLog(F("Geolocation Failure step 2 (Retrieving timezone)"));
 
       // in case of failure, remember it
       valid = false;
@@ -120,7 +129,7 @@ void Proc_GeoLocation::service()
       // Clear visible communications flag
       procPtr.UIManager.communicationsFlag(false);
 
-      errLog(F("Geolocation Failure step 3"));
+      errLog(F("Geolocation Failure step 3 (Geocoding)"));
 
       // in case of failure, remember it
       valid = false;

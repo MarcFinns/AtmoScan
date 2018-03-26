@@ -36,23 +36,7 @@ GeoMap::GeoMap(MapProvider mapProvider, String apiKey, int mapWidth, int mapHeig
   mapHeight_ = mapHeight;
 }
 
-GeoMap::~GeoMap()
-{
-  /*
-    // Remove map file from SPIFFS
-    String filename = getMapName();
-
-    if (SPIFFS.exists(filename) == true)
-    {
-    // Exiting, removing map file
-    SPIFFS.remove(filename);
-    }
-    else
-    {
-    // Exiting, but no file to remove
-    }
-  */
-}
+GeoMap::~GeoMap() {}
 
 int GeoMap::getMapWidth() {
   return mapWidth_;

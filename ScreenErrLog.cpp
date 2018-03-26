@@ -1,3 +1,10 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 
 #include <RingBufCPP.h>           //https://github.com/wizard97/Embedded_RingBuf_CPP
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI

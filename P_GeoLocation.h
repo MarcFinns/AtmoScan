@@ -1,3 +1,10 @@
+/********************************************************/
+/*                    ATMOSCAN                          */
+/*                                                      */
+/*            Author: Marc Finns 2017                   */
+/*                                                      */
+/********************************************************/
+
 #pragma once
 
 #include <ProcessScheduler.h>     // https://github.com/wizard97/ArduinoProcessScheduler
