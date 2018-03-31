@@ -8,7 +8,7 @@
 #include <ProcessScheduler.h>     // https://github.com/wizard97/ArduinoProcessScheduler
 #include <Syslog.h>                 // https://github.com/arcao/ESP8266_Syslog
 #include <Adafruit_BME280.h>        // https://github.com/adafruit/Adafruit_BME280_Library
-#include <MutichannelGasSensor.h>   // https://github.com/Seeed-Studio/Mutichannel_Gas_Sensor
+#include <MutichannelGasSensor.h>   // https://github.com/MarcFinns/Mutichannel_Gas_Sensor
 
 #include "P_AirSensors.h"
 #include "GlobalDefinitions.h"
@@ -701,15 +701,14 @@ void Proc_GeigerSensor::onTubeEvent()
 
 Proc_MultiGasSensor::Proc_MultiGasSensor(Scheduler & manager, ProcPriority pr, unsigned int period, int iterations)
   :  Process(manager, pr, period, iterations),
-     avgNH3(AVERAGING_WINDOW),
      avgCO(AVERAGING_WINDOW),
-     avgNO2(AVERAGING_WINDOW),
-     avgC3H8(AVERAGING_WINDOW),
-     avgC4H10(AVERAGING_WINDOW),
-     avgCH4(AVERAGING_WINDOW),
-     avgH2(AVERAGING_WINDOW),
-     avgC2H5OH(AVERAGING_WINDOW)
-
+     avgNO2(AVERAGING_WINDOW)
+     //     avgNH3(AVERAGING_WINDOW),
+     //     avgC3H8(AVERAGING_WINDOW),
+     //     avgC4H10(AVERAGING_WINDOW),
+     //     avgCH4(AVERAGING_WINDOW),
+     //     avgH2(AVERAGING_WINDOW),
+     //     avgC2H5OH(AVERAGING_WINDOW)
 {
 }
 
@@ -733,14 +732,14 @@ void Proc_MultiGasSensor::setup()
     syslog.log(LOG_INFO, "MultiGas firmware mismatch - Sensor disabled");
 
     // Set invalid reading
-    avgNH3.push(0);
+    //    avgNH3.push(0);
     avgCO.push(0);
     avgNO2.push(0);
-    avgC3H8.push(0);
-    avgC4H10.push(0);
-    avgCH4.push(0);
-    avgH2.push(0);
-    avgC2H5OH.push(0);
+    //    avgC3H8.push(0);
+    //    avgC4H10.push(0);
+    //    avgCH4.push(0);
+    //    avgH2.push(0);
+    //    avgC2H5OH.push(0);
 
     // Disable process
     this->disable();
@@ -753,27 +752,26 @@ void Proc_MultiGasSensor::service()
   syslog.log(LOG_DEBUG, "Proc_MultiGasSensor::service()");
 #endif
 
-  float nh3, co, no2, c3h8, c4h10, ch4, h2, c2h5oh;
+  // float nh3;
+  float co;
+  float no2;
+  // float c3h8;
+  // float c4h10;
+  // float ch4;'
+  // float h2;
+  // float c2h5oh;
 
   // Get values
-  nh3 = gas.measure_NH3();
+  // nh3 = gas.measure_NH3();
   co = gas.measure_CO();
   no2 = gas.measure_NO2();
-  c3h8 = gas.measure_C3H8();
-  c4h10 = gas.measure_C4H10();
-  ch4 = gas.measure_CH4();
-  h2 = gas.measure_H2();
-  c2h5oh = gas.measure_C2H5OH();
+  // c3h8 = gas.measure_C3H8();
+  // c4h10 = gas.measure_C4H10();
+  // ch4 = gas.measure_CH4();
+  // h2 = gas.measure_H2();
+  // c2h5oh = gas.measure_C2H5OH();
 
   // Average
-  if (nh3 >= 0)
-    avgNH3.push(nh3);
-
-#ifdef DEBUG_SYSLOG
-  else
-    errLog( "NH3 = " + String(nh3));
-#endif
-
   if (co >= 0)
     avgCO.push(co);
 
@@ -785,57 +783,62 @@ void Proc_MultiGasSensor::service()
   if (no2 >= 0)
     avgNO2.push(no2);
 
-#ifdef DEBUG_SYSLOG
-  else
-    errLog( "NO2 = " + String(no2));
-#endif
+  /*
+    #ifdef DEBUG_SYSLOG
+    else
+      errLog( "NO2 = " + String(no2));
+    #endif
 
-  if (c3h8 >= 0)
-    avgC3H8.push(c3h8);
+    if (nh3 >= 0)
+      avgNH3.push(nh3);
 
-#ifdef DEBUG_SYSLOG
-  else
-    errLog( "c3h8 = " + String(c3h8));
-#endif
+    #ifdef DEBUG_SYSLOG
+    else
+      errLog( "NH3 = " + String(nh3));
+    #endif
 
-  if (c4h10 >= 0)
-    avgC4H10.push(c4h10);
+    if (c3h8 >= 0)
+      avgC3H8.push(c3h8);
 
-#ifdef DEBUG_SYSLOG
-  else
-    errLog( "c4h10 = " + String(c4h10));
-#endif
+    #ifdef DEBUG_SYSLOG
+    else
+      errLog( "c3h8 = " + String(c3h8));
+    #endif
 
-  if (ch4 >= 0)
-    avgCH4.push(ch4);
+    if (c4h10 >= 0)
+      avgC4H10.push(c4h10);
 
-#ifdef DEBUG_SYSLOG
-  else
-    errLog( "ch4 = " + String(ch4));
-#endif
+    #ifdef DEBUG_SYSLOG
+    else
+      errLog( "c4h10 = " + String(c4h10));
+    #endif
 
-  if (h2 >= 0)
-    avgH2.push(h2);
+    if (ch4 >= 0)
+      avgCH4.push(ch4);
 
-#ifdef DEBUG_SYSLOG
-  else
-    errLog( "h2 = " + String(h2));
-#endif
+    #ifdef DEBUG_SYSLOG
+    else
+      errLog( "ch4 = " + String(ch4));
+    #endif
 
-  if (c2h5oh >= 0)
-    avgC2H5OH.push(c2h5oh);
-#ifdef DEBUG_SYSLOG
-  else
-    errLog( "c2h5oh = " + String(c2h5oh));
-#endif
+    if (h2 >= 0)
+      avgH2.push(h2);
+
+    #ifdef DEBUG_SYSLOG
+    else
+      errLog( "h2 = " + String(h2));
+    #endif
+
+    if (c2h5oh >= 0)
+      avgC2H5OH.push(c2h5oh);
+    #ifdef DEBUG_SYSLOG
+    else
+      errLog( "c2h5oh = " + String(c2h5oh));
+    #endif
+  */
 
 }
 
-
-float Proc_MultiGasSensor::getNH3()
-{
-  return avgNH3.mean();
-}
 
 float Proc_MultiGasSensor::getCO()
 {
@@ -847,32 +850,39 @@ float Proc_MultiGasSensor::getNO2()
   return avgNO2.mean();
 }
 
-float Proc_MultiGasSensor::getC3H8()
-{
+/*
+  float Proc_MultiGasSensor::getNH3()
+  {
+  return avgNH3.mean();
+  }
+
+  float Proc_MultiGasSensor::getC3H8()
+  {
   return avgC3H8.mean();
-}
+  }
 
 
-float Proc_MultiGasSensor::getC4H10()
-{
+  float Proc_MultiGasSensor::getC4H10()
+  {
   return avgC4H10.mean();
-}
+  }
 
-float Proc_MultiGasSensor::getCH4()
-{
+  float Proc_MultiGasSensor::getCH4()
+  {
   return avgCH4.mean();
-}
+  }
 
-float Proc_MultiGasSensor::getH2()
-{
+  float Proc_MultiGasSensor::getH2()
+  {
   return avgH2.mean();
-}
+  }
 
-float Proc_MultiGasSensor::getC2H5OH()
-{
+  float Proc_MultiGasSensor::getC2H5OH()
+  {
   return avgC2H5OH.mean();
-}
+  }
 
+*/
 
 // END MultiGas Sensor wrapper (Grove - MiCS6814)
 
