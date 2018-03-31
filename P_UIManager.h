@@ -62,6 +62,7 @@ class Proc_UIManager : public Process
     PAJ7620U gestureSensor;
     MAX17043 batteryMonitor;
     Average<float> avgSOC;
+    Average<float> avgVolt;
 
     bool displayInitialized;
     static Proc_UIManager * instance;

@@ -29,7 +29,7 @@
 #define ENABLE_SENSORS
 
 // Firmware revision
-#define ATMOSCAN_VERSION "v2.0.0"
+#define ATMOSCAN_VERSION "v2.1.0"
 
 // This system name
 #define APP_NAME "ATMOSCAN"
@@ -54,8 +54,8 @@
 #define SETUP_SCREEN 0
 #define LOWBATT_SCREEN 99
 
-// RUNTIME definitions (NOTE: empirical)
-#define VOLT_LOW 3.0
+// RUNTIME definitions (NOTE: _VERY_ empirical)
+#define VOLT_LOW 3.1
 #define VOLT_HIGH 3.9
 
 #define AVERAGING_WINDOW 12         // NOTE: 12 * 5 sec sensor sampling rate = 1 minute

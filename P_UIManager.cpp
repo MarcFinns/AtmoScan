@@ -33,7 +33,7 @@ Proc_UIManager * Proc_UIManager::instance = nullptr;
 
 
 Proc_UIManager::Proc_UIManager(Scheduler &manager, ProcPriority pr, unsigned int period, int iterations)
-  :  Process(manager, pr, period, iterations), avgSOC(AVERAGING_WINDOW) {}
+  :  Process(manager, pr, period, iterations), avgSOC(AVERAGING_WINDOW), avgVolt(AVERAGING_WINDOW) {}
 
 
 void Proc_UIManager::setup()
@@ -103,6 +103,8 @@ void Proc_UIManager::service()
 #endif
 
   long starttime = millis();
+
+  avgVolt.push(batteryMonitor.getVCell());
 
   // Calculate state of charge (linear approximation on voltage)
   float SoC = 100 / (VOLT_HIGH - VOLT_LOW) * (getVolt() - VOLT_LOW);
@@ -193,14 +195,13 @@ void Proc_UIManager::service()
         displayOn();
 
         // Wait for voltage to settle (helps prevent white screen issues at low voltages)
-        delay(100);
+        //delay(100);
 
         // Soft reset the screen, just in case
-        LCD.init();
+        // LCD.init();
       }
 
       // Display was on, process event
-
       // If we are in low batt mode, ignore all events, apart from screen switch off
       else if (currentScreenID == LOWBATT_SCREEN)
       {
@@ -397,6 +398,9 @@ void Proc_UIManager::service()
       currentScreen->update();
     }
   }
+
+  // Soft reset the screen, just in case
+  LCD.init();
 
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("END Proc_DisplayUpdate::service()"));
@@ -825,6 +829,7 @@ void Proc_UIManager::batterySetup()
   batteryMonitor.reset();
   batteryMonitor.quickStart();
   delay(1000);
+  avgVolt.push(batteryMonitor.getVCell());
 }
 
 //#ifdef DEBUG_SYSLOG
@@ -880,7 +885,8 @@ String Proc_UIManager::printDigits(int digits)
 
 float Proc_UIManager::getVolt()
 {
-  return batteryMonitor.getVCell();
+  // return batteryMonitor.getVCell();
+  return avgVolt.mean();
 }
 
 float Proc_UIManager::getNativeSoC()
