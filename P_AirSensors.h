@@ -204,14 +204,15 @@ class Proc_MultiGasSensor : public Process, public BaseSensor
 {
   public:
     Proc_MultiGasSensor(Scheduler &manager, ProcPriority pr, unsigned int period, int iterations);
-    float getNH3();
+
     float getCO();
     float getNO2();
-    float getC3H8();
-    float getC4H10();
-    float getCH4();
-    float getH2();
-    float getC2H5OH();
+    //    float getNH3();
+    //    float getC3H8();
+    //    float getC4H10();
+    //    float getCH4();
+    //    float getH2();
+    //    float getC2H5OH();
 
 
   protected:
@@ -220,14 +221,15 @@ class Proc_MultiGasSensor : public Process, public BaseSensor
 
   private:
     // Properties
-    Average<float> avgNH3;
+
     Average<float> avgCO;
     Average<float> avgNO2;
-    Average<float> avgC3H8;
-    Average<float> avgC4H10;
-    Average<float> avgCH4;
-    Average<float> avgH2;
-    Average<float> avgC2H5OH;
+    //    Average<float> avgNH3;
+    //    Average<float> avgC3H8;
+    //    Average<float> avgC4H10;
+    //    Average<float> avgCH4;
+    //    Average<float> avgH2;
+    //    Average<float> avgC2H5OH;
 
 };
 // END MultiGas Sensor wrapper (Grove - MiCS6814)
