@@ -25,7 +25,7 @@ extern GfxUi ui;
 
 void ScreenLowbatt::activate()
 {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, "ScreenLowbatt::activate()");
 #endif
 
@@ -42,12 +42,16 @@ void ScreenLowbatt::activate()
   // Show low battery graphics
   ui.drawBitmap(batteryLowIcon, (LCD.width() - batteryLowWidth) / 2, 60, batteryLowWidth, batteryLowHeight);
 
+  syslog.log(LOG_CRIT, "***** LOW BATTERY - SYSTEM HALTED");
+
+  delay(1000);
+
   WiFi.mode(WIFI_OFF);
 }
 
 void ScreenLowbatt::update()
 {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("ScreenLowbatt::update()"));
 #endif
 
@@ -55,7 +59,7 @@ void ScreenLowbatt::update()
 
 void ScreenLowbatt::deactivate()
 {
-#ifdef DEBUG_SYSLOG 
+#ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, "ScreenLowbatt::deactivate()");
 #endif
 
@@ -64,7 +68,8 @@ void ScreenLowbatt::deactivate()
 
 bool ScreenLowbatt::onUserEvent(int event)
 {
-  return false;
+  // Cancel any user event - no further processing
+  return true;
 }
 
 long ScreenLowbatt::getRefreshPeriod()

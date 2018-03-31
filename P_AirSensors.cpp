@@ -89,13 +89,20 @@ void Proc_ComboTemperatureHumiditySensor::setup()
     this->disable();
   }
 
-  // first reading
+  // first reading, to initialise averages
 
   // Get temperature value
   float temp = hdc1080.readTemperature();
 
   // initialize average
   avgTemperature.push(temp + TEMPERATURE_ADJUSTMENT_FACTOR);
+
+
+  // Get humidity value
+  float hum = hdc1080.readHumidity();
+
+  // initialize average
+  avgHumidity.push(hum);
 
 
 }
@@ -110,11 +117,11 @@ void Proc_ComboTemperatureHumiditySensor::service()
   float temp = hdc1080.readTemperature();
 
   // If sensor misbehave (might happen when battery is drained), reset it and skip a reading cycle
-  // Misbehavior is define as a jump in value of more than 30% with respect to the moving average
-  if (abs(temp)  > abs(avgTemperature.mean() * 1.3 ))
+  // Misbehavior is define as a jump in value of more than 5 degree in 5 seconds with respect to the moving average
+  if (abs(temp - avgTemperature.mean()) > 5 )
   {
     // Log error
-    errLog("TemperatureHumiditySensor error - resetting");
+    errLog("TemperatureHumiditySensor - Temp error - resetting sensor");
     syslog.log(LOG_ERR, "Temp reading was =" + String(temp));
     syslog.log(LOG_ERR, "Battery voltage was =" + String(procPtr.UIManager.getVolt()));
 
@@ -123,10 +130,28 @@ void Proc_ComboTemperatureHumiditySensor::service()
 
     // Skip cycle
     return;
-
   }
+
+
   // Get humidity value
   float humidity = hdc1080.readHumidity();
+
+
+  // If sensor misbehave (might happen when battery is drained), reset it and skip a reading cycle
+  // Misbehavior is define as a jump in value of more than 10% in 5 seconds with respect to the moving average
+  if (abs(humidity - avgHumidity.mean()) > 10 )
+  {
+    // Log error
+    errLog("TemperatureHumiditySensor - Humidity error - resetting sensor");
+    syslog.log(LOG_ERR, "Hum reading was =" + String(humidity));
+    syslog.log(LOG_ERR, "Battery voltage was =" + String(procPtr.UIManager.getVolt()));
+
+    //  Reset Sensor
+    hdc1080.begin(0x40);
+
+    // Skip cycle
+    return;
+  }
 
   // averages
   avgTemperature.push(temp + TEMPERATURE_ADJUSTMENT_FACTOR);
@@ -241,20 +266,10 @@ void Proc_CO2Sensor::setup()
 
     // Initialise SoftwareSerial for CO2 sensor MH-Z19
     co2Serial.begin(9600);
+    co2Serial.enableIntTx(false);
 
-    // dummy read to clear buffer
-    co2Serial.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE); //request PPM CO2
-
-    // Receive more data than needed, to empty  buffer (should generate  timeout)
-    unsigned char response[32];
-    co2Serial.readBytes(response, MHZ19_RESPONSE_SIZE * 2);
-
-    // Log BUFFER
-#ifdef DEBUG_SYSLOG
-    syslog.log(LOG_DEBUG, "MH-Z19 RESPONSE " + bytes2hex(response, sizeof(response)));
-#endif
-
-    delay (500);
+    // Discard spurious data
+    co2Serial.flush();
 
     // Test sensor functionality
     service();
@@ -262,6 +277,8 @@ void Proc_CO2Sensor::setup()
     // If data is read correctly, we are done
     if (!readError)
       return;
+
+    errLog(F("Init err CO2 sensor, retrying"));
 
     // Wait a bit and retry
     delay(1000);
@@ -282,6 +299,7 @@ void Proc_CO2Sensor::setup()
 
 void Proc_CO2Sensor::service()
 {
+
   // syslog.log(LOG_DEBUG, "3 - MH-Z19");
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "Proc_CO2Sensor::service()");
@@ -292,6 +310,9 @@ void Proc_CO2Sensor::service()
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "Reading  for CO2 data");
 #endif
+
+  // Clear buffer for any spurious data received since last reading
+  co2Serial.flush();
 
   //request PPM CO2
   co2Serial.write(MHZ19_cmdRead, MHZ19_COMMAND_SIZE);
@@ -309,7 +330,7 @@ void Proc_CO2Sensor::service()
     errLog(F("CO2 Sensor - Wrong starting byte"));
 
     // empty buffer
-    co2Serial.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
+    //co2Serial.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
 
     readError = true;
 
@@ -322,7 +343,7 @@ void Proc_CO2Sensor::service()
     errLog(F("CO2 Sensor - Wrong command"));
 
     // empty buffer
-    co2Serial.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
+    // co2Serial.readBytes(Buffer, MHZ19_RESPONSE_SIZE * 2);
 
     readError = true;
 
@@ -338,7 +359,7 @@ void Proc_CO2Sensor::service()
   int responseLow = (int) Buffer[3];
   float co2 = (256 * responseHigh) + responseLow;
 
-  // Average
+  // UpdateAverage
   avgCO2.push(co2);
 
 }

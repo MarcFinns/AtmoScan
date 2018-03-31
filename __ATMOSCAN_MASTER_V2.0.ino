@@ -200,7 +200,7 @@ void setup()
 #endif
 
   // Wait for electronics to settle
-  delay(2000);
+  delay(3000);
 
   // Dynamically create systemID based on MAC address
   systemID = F("ATMOSCAN-");
@@ -299,7 +299,9 @@ void setup()
 
   // Turn on LCD and wait a bit on splash screen...
   procPtr.UIManager.displayOn();
-  delay (1000);
+  delay (100);
+  LCD.init();
+  delay (900);
 
   // **********************  Initialization with progress bar...
   LCD.setFreeFont(FSS9);
@@ -343,7 +345,7 @@ void setup()
     syslog.defaultPriority(LOG_KERN);
 
     // Start logging
-    syslog.log(LOG_INFO, "******* Booting firmware " + String(ATMOSCAN_VERSION) + ", Built " + String(__DATE__ " " __TIME__) + " ******* ");
+    syslog.log(LOG_INFO, "******* BOOTING FIRMWARE " + String(ATMOSCAN_VERSION) + ", BUILT " + String(__DATE__ " " __TIME__) + " ******* ");
 
     // Log current configuration
     syslog.log(LOG_INFO, "Connected to network " + WiFi.SSID() + " with address " + WiFi.localIP().toString());
@@ -427,7 +429,7 @@ void setup()
   }
 
   // Configuration completed!
-  syslog.log(LOG_INFO, F("************ INITIALIZATION COMPLETE, STARTING PROCESSES *************"));
+  syslog.log(LOG_INFO, F("************ BOOT SEQUENCE COMPLETE *************"));
 }
 
 
@@ -465,6 +467,10 @@ void initOTA()
   {
     // Turn on backlight
     procPtr.UIManager.displayOn();
+    delay(200);
+
+    // Against white screen issue
+    LCD.init();
 
     // Reset screen settings
     LCD.setRotation(2);
