@@ -7,7 +7,7 @@
 
 #include <TFT_eSPI.h>             // https://github.com/Bodmer/TFT_eSPI
 #include <NtpClientLib.h>         // https://github.com/gmag11/NtpClient
-#include <MAX17043.h>             // https://github.com/lucadentella/ArduinoLib_MAX17043
+#include <MAX17043.h>             // https://github.com/MarcFinns/ArduinoLib_MAX17043
 #include <Syslog.h>               // https://github.com/arcao/ESP8266_Syslog
 
 #include "P_UIManager.h"
@@ -108,8 +108,7 @@ void Proc_UIManager::service()
 
   // Calculate state of charge (linear approximation on voltage)
   float SoC = 100 / (VOLT_HIGH - VOLT_LOW) * (getVolt() - VOLT_LOW);
-  avgSOC.push(SoC > 100 ? 100 : SoC); // 3.6v = 100 %; 3v = 0 %
-
+  avgSOC.push(SoC > 100 ? 100 : SoC);
 
   // Handle low battery condition
   // If battery depleted, force LOWBAT screen and move on
@@ -140,7 +139,7 @@ void Proc_UIManager::service()
       // Set screen refresh interval appropriate for current screen
       this->setPeriod(currentScreen->getRefreshPeriod());
 
-      // Switch off processes
+      // Switch off sensor processes
       // TODO: now hardcoded... make it generic and implement global stopProcesses
       procPtr.ComboTemperatureHumiditySensor.disable();
       procPtr.ComboPressureHumiditySensor.disable();
@@ -163,7 +162,6 @@ void Proc_UIManager::service()
     delay(1000);
     ESP.restart();
   }
-
 
   // Event processing
   bool wasEvent =  false;
@@ -193,12 +191,6 @@ void Proc_UIManager::service()
       {
         // Turn on backlight
         displayOn();
-
-        // Wait for voltage to settle (helps prevent white screen issues at low voltages)
-        //delay(100);
-
-        // Soft reset the screen, just in case
-        // LCD.init();
       }
 
       // Display was on, process event
@@ -227,6 +219,7 @@ void Proc_UIManager::service()
           eventFlag = false;
         }
       }
+
       // in case of valid event, execute the corresponding action
       else if (eventID != GES_NONE)
       {
@@ -399,8 +392,11 @@ void Proc_UIManager::service()
     }
   }
 
-  // Soft reset the screen, just in case
-  LCD.init();
+  // If display is non, soft reset the LCD module, just in case (helps the white screen issue)
+  if (isDisplayOn)
+  {
+    LCD.init();
+  }
 
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_INFO, F("END Proc_DisplayUpdate::service()"));

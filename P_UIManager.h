@@ -9,7 +9,7 @@
 
 #include <ProcessScheduler.h>
 #include <libpaj7620.h>           // https://github.com/MarcFinns/Gesture_PAJ7620
-#include <MAX17043.h>             // https://github.com/lucadentella/ArduinoLib_MAX17043
+#include <MAX17043.h>             // https://github.com/MarcFinns/ArduinoLib_MAX17043
 #include <Average.h>              // https://github.com/MajenkoLibraries/Average
 
 #include "ScreenFactory.h"
