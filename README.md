@@ -4,8 +4,8 @@ Instructable can be found [HERE](https://www.instructables.com/id/AtmoScan/).
 See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
 
 **NEWS - UPCOMING CHANGES**
-* A small hardware change allows Atmoscan to turn off itself from software, remediating one of the biggest drawbacks of the design - how to handle low battery. The change can be easily applied to boards V1.0. I will publish changes to HW and SW together with a PCB V2.0. Incidentally, Atmoscan might be (to my knowledge at least) the first ESP8266 application that uses all GPIOs, including those that allegedly cannot be used - stay tuned
-* I am also working on addressing the instabilities that in some cases asise in low battery situations. Mod not complete yet.
+* A small hardware change allows Atmoscan to **turn off itself from software**, remediating one of the biggest drawbacks of the design - how to handle low battery. The change can be easily applied to boards V1.0. I will publish changes to HW and SW together with a PCB V2.0. Incidentally, Atmoscan might be (to my knowledge at least) the first ESP8266 application that uses all GPIOs, including those that allegedly cannot be used - stay tuned
+* I am also working on addressing the **instability** that in some cases arise in low battery situations. After extensive oscilloscope play i know what the problem is. Mod not complete yet though.
 * Shortly I will post the CAD files for the **complete enclosure**, not only for the inner supports
 
 **AtmoScan** is a multisensor device that measures:
