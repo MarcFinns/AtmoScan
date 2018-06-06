@@ -8,6 +8,14 @@ See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
 * I am also working on addressing the **instability** that in some cases arise in low battery situations. After extensive oscilloscope play i know what the problem is. Mod not complete yet though.
 * Shortly I will post the CAD files for the **complete enclosure**, not only for the inner supports
 
+**What's new** 
+
+* Hardware mod that allows to turn it off via software. Used for low battery as well as for a specific command
+* White screen issue mitigated
+* PCB v2 and instructions on how to apply the mods to PCB v1
+* CAD files for full enclosure
+
+
 **AtmoScan** is a multisensor device that measures:
 
 * Temperature
