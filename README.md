@@ -5,9 +5,6 @@ See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
 
 **NEWS**
 
-* Hardware mod that allows to turn it off via software. Used for low battery as well as for a specific command
-
-
 * Some small hardware changes improve the design, including the ability to **turn off itself from software**, remediating one of the biggest drawbacks of the design - how to handle low battery. 
 * A PCB v2 design is now published together with a guide to easily apply the change to boards V1.0.
 * CAD files for **complete enclosure**
