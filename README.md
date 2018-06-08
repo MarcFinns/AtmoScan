@@ -3,7 +3,7 @@
 Instructable can be found [HERE](https://www.instructables.com/id/AtmoScan/).  
 See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
 
-**FOR THOSE WHO MIGHT BE INTERESTED, I HAVE AVAILABLE:
+FOR THOSE WHO MIGHT BE INTERESTED, I HAVE AVAILABLE:
 
 - 2 LASER CUT ENCLOSURES 
 
