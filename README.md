@@ -3,6 +3,12 @@
 Instructable can be found [HERE](https://www.instructables.com/id/AtmoScan/).  
 See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
 
+**FOR THOSE WHO MIGHT BE INTERESTED, I HAVE AVAILABLE:
+
+- 2 LASER CUT ENCLOSURES 
+
+- 1 FULLY ASSEMBLED BOARD INCLUDING ALL CONNECTORS (WITH 2.0 MODS, TESTED)**
+
 **What's new** 
 
 * Some small hardware changes improve the design, including the ability to **turn off itself from software**, remediating one of the biggest drawbacks of the design - how to handle low battery. 
