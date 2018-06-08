@@ -3,11 +3,11 @@
 Instructable can be found [HERE](https://www.instructables.com/id/AtmoScan/).  
 See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
 
-**FOR THOSE WHO MIGHT BE INTERESTED, I HAVE AVAILABLE:
+##FOR THOSE WHO MIGHT BE INTERESTED, I HAVE AVAILABLE:
 
 - 2 LASER CUT ENCLOSURES 
 
-- 1 FULLY ASSEMBLED BOARD INCLUDING ALL CONNECTORS (WITH 2.0 MODS, TESTED)**
+- 1 FULLY ASSEMBLED BOARD INCLUDING ALL CONNECTORS (WITH 2.0 MODS, TESTED)
 
 **What's new** 
 
