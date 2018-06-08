@@ -26,16 +26,18 @@ a) The TFT library (https://github.com/Bodmer/TFT_eSPI) has a config file (User_
 - the SPI clock frequency.
 While SPI could theoretically run up to 40MHz, it is better to keep it lower, say 20MHz, especially if the cables to the display are not very short. Skipping this step *WILL* make the sketch fail. An example file is in this directory, but make sure you edit your own should the format change in new versions of the library
 
-b) Some #DEFINE statements should be reviewed in the GlobalConfig.h file, as follows.
+b) Some #DEFINE statements should be reviewed in the GlobalDefinitions.h file, as follows.
 
+appear "4M (2M SPIFFS)"
 
+3) NECESSARY configuration
 
+a) The TFT library (https://github.com/Bodmer/TFT_eSPI) has a config file (User_Setup.h) that MUST be edited to define 
 
+- which GPIOs are used for the display 
+- the SPI clock frequency.
 
+While SPI could theoretically run up to 40MHz, it is better to keep it lower, say 20MHz, especially if the cables to the display are not very short. Skipping this step *WILL* make the sketch fail. An example file is in this directory, but make sure you edit your own should the format change in new versions of the library
 
-
-
-
-
-
+b) Some #DEFINE statements should be reviewed in the GlobalConfig
 
