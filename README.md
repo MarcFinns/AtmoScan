@@ -6,14 +6,14 @@ See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
 **What's new** 
 
 * Some small hardware changes improve the design, including the ability to **turn off itself from software**, remediating one of the biggest drawbacks of the design - how to handle low battery. 
-* Command added to the setup menu to turn off the device
-* White screen with low battery issue mitigation
-* A PCB v2 design is now published together with a guide to easily apply the change to boards V1.0.
+* Command added to the setup **menu to turn off the device**
+* White screen with low battery issue **mitigation**
+* A PCB v2 design is now published together with a guide to easily **apply the change to boards V1.0.**
 * CAD files for **complete enclosure**
 
 Atmoscan might be (to my knowledge at least) the first ESP8266 application that **uses all GPIOs**, including those that allegedly cannot be used.
 
-**AtmoScan** is a multisensor device that measures:
+**ATMOSCAN** is a multisensor device that measures:
 
 * Temperature
 * Humidity
