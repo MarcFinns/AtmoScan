@@ -16391,7 +16391,7 @@ Panasonic RG Series</description>
 <part name="Q2" library="lio" deviceset="IRF7319" device=""/>
 <part name="GND30" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="R20" library="adafruit" deviceset="R-US_" device="M0805" value=" 10K"/>
-<part name="R21" library="adafruit" deviceset="R-US_" device="M0805" value=" 100K"/>
+<part name="R21" library="adafruit" deviceset="R-US_" device="M0805" value="220K"/>
 <part name="C15" library="adafruit" deviceset="C-US" device="C0805K" value="1uF"/>
 <part name="GND29" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="R17" library="adafruit" deviceset="R-US_" device="M0805" value=" 10K"/>
