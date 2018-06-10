@@ -1,17 +1,25 @@
 ## AtmoScan
 
 Instructable can be found [HERE](https://www.instructables.com/id/AtmoScan/).  
-See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA)
+See it in action in this [VIDEO](https://www.youtube.com/watch?v=iyFuKU8ZcuA).
+
+FOR THOSE WHO MIGHT BE INTERESTED, I HAVE AVAILABLE:
+
+- 2 LASER CUT ENCLOSURES 
+
+- 1 FULLY ASSEMBLED BOARD INCLUDING ALL CONNECTORS (WITH 2.0 MODS, TESTED)
 
 **What's new** 
 
-* Hardware mod that allows to turn it off via software. Used for low battery as well as for a specific command
-* White screen issue mitigated
-* PCB v2 and instructions on how to apply the mods to PCB v1
-* CAD files for full enclosure
+* Some small hardware changes improve the design, including the ability to **turn off itself from software**, remediating one of the biggest drawbacks of the design - how to handle low battery. 
+* Command added to the setup **menu to turn off the device**
+* White screen with low battery issue **mitigation**
+* A PCB v2 design is now published together with a guide to easily **apply the change to boards V1.0.**
+* CAD files for **complete enclosure**
 
+Atmoscan might be (to my knowledge at least) the first ESP8266 application that **uses all GPIOs**, including those that allegedly cannot be used.
 
-**AtmoScan** is a multisensor device that measures:
+**ATMOSCAN** is a multisensor device that measures:
 
 * Temperature
 * Humidity
