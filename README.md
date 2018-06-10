@@ -9,13 +9,15 @@ FOR THOSE WHO MIGHT BE INTERESTED, I HAVE AVAILABLE:
 
 - 1 FULLY ASSEMBLED BOARD INCLUDING ALL CONNECTORS (WITH 2.0 MODS, TESTED)
 
-**What's new** 
+**What's new** - Atmoscan is evolving:
 
-* Some small hardware changes improve the design, including the ability to **turn off itself from software**, remediating one of the biggest drawbacks of the design - how to handle low battery. 
+* Some small hardware changes improved the original design, including the ability to **turn off itself from software**, remediating one of the biggest drawbacks of the design - how to handle low battery. 
 * Command added to the setup **menu to turn off the device**
 * White screen with low battery issue **mitigation**
 * A PCB v2 design is now published together with a guide to easily **apply the change to boards V1.0.**
-* CAD files for **complete enclosure**
+* Battery pack now based on 5 x 18650 Li-ion in "olympic circles" configuration. Way more performant and reliable than the chinese Li-Po pack
+* Repositioning of the CO2 sensor, to completely separate the temperature sensor from any potential heat source
+* CAD files for the **complete enclosure**, with improved design
 
 Atmoscan might be (to my knowledge at least) the first ESP8266 application that **uses all GPIOs**, including those that allegedly cannot be used.
 
