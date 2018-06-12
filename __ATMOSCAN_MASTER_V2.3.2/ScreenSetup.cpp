@@ -240,7 +240,6 @@ void  ScreenSetup::startHotspot()
   wifiManager.addParameter(&custom_geonames_user);
   wifiManager.addParameter(&custom_timezonedb_key);
 
-
   // Goes into a blocking loop awaiting configuration
   wifiManager.setConfigPortalTimeout(300);
   wifiManager.startConfigPortal(systemID.c_str());

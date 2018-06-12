@@ -476,7 +476,7 @@ void initOTA()
     delay(200);
 
     // Against white screen issue
-    LCD.init();
+    //LCD.init();
 
     // Reset screen settings
     LCD.setRotation(2);
