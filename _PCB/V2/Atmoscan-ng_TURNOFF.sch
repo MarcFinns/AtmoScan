@@ -16392,7 +16392,7 @@ Panasonic RG Series</description>
 <part name="GND30" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="R20" library="adafruit" deviceset="R-US_" device="M0805" value=" 10K"/>
 <part name="R21" library="adafruit" deviceset="R-US_" device="M0805" value="220K"/>
-<part name="C15" library="adafruit" deviceset="C-US" device="C0805K" value="1uF"/>
+<part name="C15" library="adafruit" deviceset="C-US" device="C0805K" value="10uF"/>
 <part name="GND29" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="R17" library="adafruit" deviceset="R-US_" device="M0805" value=" 10K"/>
 <part name="ON/OFF" library="switch-omron" deviceset="31-XX" device="" value="SW2"/>
@@ -16500,6 +16500,7 @@ Panasonic RG Series</description>
 <part name="D3" library="adafruit" deviceset="DIODE" device="SOD-123" value="1N4148"/>
 <part name="C22" library="rc-master" deviceset="CP_" device="E-050X100" value="3300uF 6.3V"/>
 <part name="GND39" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
+<part name="R16" library="adafruit" deviceset="R-US_" device="M0805" value="470"/>
 </parts>
 <sheets>
 <sheet>
@@ -16663,9 +16664,10 @@ GND</text>
 <attribute name="DRAWING_NAME" x="186.69" y="-111.76" size="2.54" layer="94"/>
 <attribute name="SHEET" x="200.025" y="-121.92" size="2.54" layer="94"/>
 </instance>
-<instance part="D3" gate="G$1" x="48.26" y="-30.48" rot="R90"/>
+<instance part="D3" gate="G$1" x="48.26" y="-25.4" rot="R90"/>
 <instance part="C22" gate="G$1" x="78.74" y="-76.2" rot="R90"/>
 <instance part="GND39" gate="1" x="-83.82" y="53.34" rot="MR0"/>
+<instance part="R16" gate="G$1" x="48.26" y="-35.052" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -17318,10 +17320,10 @@ GND</text>
 <pinref part="Q2" gate="G$1" pin="N-G"/>
 <pinref part="R17" gate="G$1" pin="1"/>
 <wire x1="57.15" y1="-64.77" x2="48.26" y2="-64.77" width="0.1524" layer="91"/>
-<pinref part="D3" gate="G$1" pin="A"/>
 <wire x1="48.26" y1="-64.77" x2="43.18" y2="-64.77" width="0.1524" layer="91"/>
-<wire x1="48.26" y1="-33.02" x2="48.26" y2="-64.77" width="0.1524" layer="91"/>
 <junction x="48.26" y="-64.77"/>
+<pinref part="R16" gate="G$1" pin="1"/>
+<wire x1="48.26" y1="-40.132" x2="48.26" y2="-64.77" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="SYS" class="0">
@@ -17735,11 +17737,18 @@ GND</text>
 <net name="_TURN_OFF" class="0">
 <segment>
 <pinref part="U1" gate="G$1" pin="*GPIO9"/>
-<wire x1="35.56" y1="-5.08" x2="35.56" y2="-22.86" width="0.1524" layer="91"/>
+<wire x1="35.56" y1="-5.08" x2="35.56" y2="-20.32" width="0.1524" layer="91"/>
 <label x="35.56" y="-20.32" size="1.778" layer="95" rot="R90"/>
-<wire x1="35.56" y1="-22.86" x2="48.26" y2="-22.86" width="0.1524" layer="91"/>
+<wire x1="35.56" y1="-20.32" x2="48.26" y2="-20.32" width="0.1524" layer="91"/>
 <pinref part="D3" gate="G$1" pin="C"/>
-<wire x1="48.26" y1="-22.86" x2="48.26" y2="-27.94" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="-20.32" x2="48.26" y2="-22.86" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$28" class="0">
+<segment>
+<pinref part="D3" gate="G$1" pin="A"/>
+<wire x1="48.26" y1="-27.94" x2="48.26" y2="-29.972" width="0.1524" layer="91"/>
+<pinref part="R16" gate="G$1" pin="2"/>
 </segment>
 </net>
 </nets>
