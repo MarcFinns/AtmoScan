@@ -410,12 +410,8 @@ void Proc_ParticleSensor::setup()
     Serial.write(PMS7003_cmdPassiveEnable, PMS7003_COMMAND_SIZE);
     Serial.flush();
 
-    // Dummy read to clear buffer
-    Serial.write(PMS7003_cmdPassiveRead, PMS7003_COMMAND_SIZE);
-    Serial.flush();
-
-    // Receive more data than needed, to empty  buffer (should generate  timeout)
-    Serial.readBytes(Buffer, sizeof(Buffer));
+    // Wait for command to take effect
+    delay(1000);
 
     // Test sensor functionality
     service();
@@ -425,7 +421,7 @@ void Proc_ParticleSensor::setup()
     {
       return;
     }
-    
+
     errLog(F("Init err PMS7003 sensor, retrying"));
 
     // Wait a bit and retry
@@ -444,41 +440,6 @@ void Proc_ParticleSensor::setup()
   // Disable process
   this->disable();
 
-
-  /*
-
-    // Set passive mode
-    #ifdef DEBUG_SYSLOG
-    syslog.log(LOG_DEBUG, "PMS7003 SETTING PASSIVE MODE");
-    #endif
-
-    Serial.write(PMS7003_cmdPassiveEnable, 7);
-    Serial.flush();
-
-    //Dummy read to clear  buffer
-    Serial.write(PMS7003_cmdPassiveRead, 7);
-    Serial.flush();
-
-    // Receive more data than needed, to empty  buffer (should generate  timeout)
-    Serial.readBytes(Buffer, sizeof(Buffer));
-
-    // Test sensor functionality
-    service();
-
-    if (readError)
-    {
-      // There was a problem detecting the sensor
-      errLog(F("Err PMS7003 - disabled"));
-
-      // Set invalid reading
-      avgPM01.push(0);
-      avgPM2_5.push(0);
-      avgPM10.push(0);
-
-      // Disable process
-      this->disable();
-    }
-  */
 }
 
 void Proc_ParticleSensor::service()
@@ -493,6 +454,17 @@ void Proc_ParticleSensor::service()
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, "Reading  for particle data");
 #endif
+
+  // Clear serial input buffer from spurious characters
+  while (Serial.available() > 0)
+  {
+
+#ifdef DEBUG_SYSLOG
+    syslog.log(LOG_DEBUG, "Clearing PMS serial buffer");
+#endif
+
+    Serial.read();
+  }
 
   // Send READ command
   Serial.write(PMS7003_cmdPassiveRead, PMS7003_COMMAND_SIZE);
@@ -570,7 +542,7 @@ char Proc_ParticleSensor::verifyChecksum(unsigned char *thebuf, int leng)
   {
     receiveSum = receiveSum + thebuf[i];
   }
-  // receiveSum = receiveSum;// + 0x42 + 0x4d;
+  // + 0x42 + 0x4d;
 
   if (receiveSum == ((thebuf[leng - 2] << 8) + thebuf[leng - 1])) //check the  data
   {
