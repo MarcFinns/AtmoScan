@@ -193,11 +193,15 @@ void ScreenBuienRadar::update()
 
             // Refresh title
             LCD.setTextColor(TFT_YELLOW, TFT_BLACK);
-            LCD.setTextDatum(TC_DATUM);
-
-            //LCD.setFreeFont(&Dialog_plain_15);
+            LCD.setTextDatum(BC_DATUM);
             LCD.setFreeFont(&ArialRoundedMTBold_14);
-            LCD.drawString("Next 2 hours", 120, 280, GFXFF);
+            LCD.drawString("<- 2 hours ->", 120, 275, GFXFF);
+
+            LCD.setTextDatum(BR_DATUM);
+            LCD.drawString(hours[0], 0, 275, GFXFF);
+
+            LCD.setTextDatum(BL_DATUM);
+            LCD.drawString(hours[dataPoints - 1], 239, 275, GFXFF);
           }
         }
       }
