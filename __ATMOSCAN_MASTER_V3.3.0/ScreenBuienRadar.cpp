@@ -108,10 +108,15 @@ void ScreenBuienRadar::update()
         // Set visual communications flag on screen
         procPtr.UIManager.communicationsFlag(true);
 
+        String filename = String(F("/forecast")) + String(currentImage) + F(".jpg");
+
+        // Remove old file
+        SPIFFS.remove(filename);
+
         // Download file
         int len = getForecastImage(F("api.buienradar.nl"),
                                    String(F("/image/1.0/24hourforecastmapnl/jpg/?t=")) + String(timeStamp) + F("&w=240&h=192&type=rain"),
-                                   String(F("/forecast")) + String(currentImage) + F(".jpg"));
+                                   filename);
 
         // Reset visual communications flag
         procPtr.UIManager.communicationsFlag(false);
@@ -183,26 +188,26 @@ void ScreenBuienRadar::update()
             // Print hours
             //   LCD.println(buienRadar->hours[i]);
 
-            int h = max(forecasts[i] / 4, 2);
+            int h = max(forecasts[i] / 5, 2);
 
             // Draw bar
-            LCD.fillRect(i * 10, 319 - h, 7, h, TFT_BLUE);
-
-            // Remember refresh time
-            lastChartRefreshTime = millis();
-
-            // Refresh title
-            LCD.setTextColor(TFT_YELLOW, TFT_BLACK);
-            LCD.setTextDatum(BC_DATUM);
-            LCD.setFreeFont(&ArialRoundedMTBold_14);
-            LCD.drawString("<- 2 hours ->", 120, 275, GFXFF);
-
-            LCD.setTextDatum(BR_DATUM);
-            LCD.drawString(hours[0], 0, 275, GFXFF);
-
-            LCD.setTextDatum(BL_DATUM);
-            LCD.drawString(hours[dataPoints - 1], 239, 275, GFXFF);
+            LCD.fillRect(i * 10, 304 - h, 7, h, TFT_BLUE);
           }
+
+          // Remember refresh time
+          lastChartRefreshTime = millis();
+
+          // Refresh title
+          LCD.setTextColor(TFT_YELLOW, TFT_BLACK);
+          LCD.setTextDatum(BC_DATUM);
+          LCD.setFreeFont(&ArialRoundedMTBold_14);
+          LCD.drawString("<- 2 hr forecast ->", 120, 319, GFXFF);
+
+          LCD.setTextDatum(BR_DATUM);
+          LCD.drawString(hours[0], 0, 319, GFXFF);
+
+          LCD.setTextDatum(BL_DATUM);
+          LCD.drawString(hours[dataPoints - 1], 239, 319, GFXFF);
         }
       }
     }
@@ -308,8 +313,7 @@ int ScreenBuienRadar::getForecastImage(String host, String resource, String file
     return -1;
   }
 
-  // remove old file and open for write
-  SPIFFS.remove(filename);
+  // Open file for write
   fs::File f = SPIFFS.open(filename, "w+");
   if (!f)
   {
@@ -323,7 +327,7 @@ int ScreenBuienRadar::getForecastImage(String host, String resource, String file
   int received;
   uint8_t buff[512] = { 0 };
 
-  // syslog.log(LOG_DEBUG, String(F("Heap = ")) + String(ESP.getFreeHeap()) + F(" bytes"));
+  syslog.log(LOG_DEBUG, String(F("Heap = ")) + String(ESP.getFreeHeap()) + F(" bytes"));
 
   // read all data from server
   while (client.available() && remaining > 0)
@@ -375,7 +379,7 @@ int ScreenBuienRadar::getLocalForecast( double latitude, double longitude, Strin
     return -1;
   }
 
-  // gpsgadget.buienradar.nl//data/raintext?lat=52&lon=5
+  // gpsgadget.buienradar.nl/data/raintext?lat=52&lon=5
   // HTTP GET
   String resource =  F("/data/raintext?lat=");
   resource += String(latitude, 2) +
@@ -393,6 +397,8 @@ int ScreenBuienRadar::getLocalForecast( double latitude, double longitude, Strin
   while (client.connected())
   {
     String header = client.readStringUntil('\n');
+    syslog.log(LOG_DEBUG, "HEADER = " + header);
+
     if (header.startsWith(F("HTTP/1.")))
     {
       httpCode = header.substring(9, 12).toInt();

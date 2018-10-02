@@ -88,11 +88,9 @@ extern "C" {
 #include "user_interface.h"
 }
 
-
 // -------------------------------------------------------
 //  Globals
 // -------------------------------------------------------
-
 
 // Unique board ID
 String systemID;
@@ -190,7 +188,6 @@ ProcessContainer procPtr =
   RUNTIME_FOREVER)
 
 };
-
 
 void setup()
 {

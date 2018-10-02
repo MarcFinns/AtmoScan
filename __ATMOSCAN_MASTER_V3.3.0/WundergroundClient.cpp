@@ -104,6 +104,7 @@ bool WundergroundClient::updateAstronomy(String apiKey, String language, String 
 
 bool WundergroundClient::doUpdate(String url)
 {
+  
 #ifdef DEBUG_SYSLOG
   syslog.log(LOG_DEBUG, String(F("URL = ")) + url);
 #endif

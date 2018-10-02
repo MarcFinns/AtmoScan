@@ -78,8 +78,6 @@ class Proc_ComboPressureHumiditySensor: public Process, public BaseSensor
     Average<float> avgTemperature;
     Adafruit_BME280 bme;
 
-    // methods
-
 };
 // END Pressure Sensor wrapper (BMP280)
 
@@ -192,6 +190,8 @@ class Proc_GeigerSensor : public Process, public BaseSensor
     unsigned long lastCountReset = 0;
     static Proc_GeigerSensor * instance;
     Average<float> avgCPM;
+    Average<float> avgRAD;
+    int radAvgDelay = 0;
 };
 // END Geiger Sensor wrapper (LND712)
 

@@ -621,7 +621,9 @@ Proc_GeigerSensor *Proc_GeigerSensor::instance = nullptr;
 
 Proc_GeigerSensor::Proc_GeigerSensor(Scheduler & manager, ProcPriority pr, unsigned int period, int iterations)
   :  Process(manager, pr, period, iterations),
-     avgCPM(AVERAGING_WINDOW)
+     avgCPM(AVERAGING_WINDOW * 2),  // moving average over 1 minute
+     avgRAD(15)                     // moving average over 15 minutes
+
 {
 }
 
@@ -677,7 +679,14 @@ void Proc_GeigerSensor::service()
     {
       // Good run, record it
       avgCPM.push(thisCPM);
-      //lastCPM = thisCPM;
+
+      // Smoothen Radiation measurement
+      if (radAvgDelay == 0) // every minute
+      {
+        avgRAD.push(avgCPM.mean());
+        radAvgDelay = 60000 / FAST_SAMPLE_PERIOD;
+      }
+      radAvgDelay--;
 
 #ifdef DEBUG_SYSLOG
       syslog.log(LOG_DEBUG, String(F("Geiger last CPM = ")) + String(thisCPM));
@@ -699,7 +708,7 @@ float Proc_GeigerSensor::getCPM()
 
 float Proc_GeigerSensor::getRadiation()
 {
-  return avgCPM.mean() / LND712_CONV_FACTOR;
+  return avgRAD.mean() / LND712_CONV_FACTOR;
 }
 
 void Proc_GeigerSensor::onTubeEventISR()

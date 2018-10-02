@@ -70,7 +70,7 @@
 
 #define AVERAGING_WINDOW 12         // NOTE: 12 * 5 sec sensor sampling rate = 1 minute
 
-#define FAST_SAMPLE_PERIOD 2000     // (ms) Used for Geiger sensor 
+#define FAST_SAMPLE_PERIOD 2500     // (ms) Used for Geiger sensor 
 #define SLOW_SAMPLE_PERIOD 5000     // (ms) Used for other sensors 
 #define MQTT_UPDATE_PERIOD 60000    // (ms)
 #define GEOLOC_RETRY_PERIOD 60000   // (ms)
