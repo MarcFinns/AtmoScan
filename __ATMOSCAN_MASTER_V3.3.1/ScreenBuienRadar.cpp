@@ -99,10 +99,11 @@ void ScreenBuienRadar::update()
       // Refresh images from web site every 30 minutes
       if ( millis() > lastImageRefreshTime + 30 * 60 * 1000 || lastImageRefreshTime == 0 )
       {
-        // Cleanup old maps from SPIFFS, if present
+        // Cleanup all old maps at once from SPIFFS, to avoid fragmentation
         if (needsCleanup)
         {
           removeAllMaps();
+          currentImage = 0;
           needsCleanup = false;
         }
 
@@ -117,9 +118,6 @@ void ScreenBuienRadar::update()
 
         // Create filename
         String filename = String(F("/forecast")) + String(currentImage) + F(".jpg");
-
-        // Remove old file
-        //SPIFFS.remove(filename);
 
         // Set visual communications flag on screen
         procPtr.UIManager.communicationsFlag(true);
