@@ -75,7 +75,6 @@ void  ScreenWeatherStation::activate()
   LCD.setFreeFont(&ArialRoundedMTBold_14);
   LCD.setTextColor(TFT_ORANGE, TFT_BLACK);
 
-
   if (!procPtr.GeoLocation.isValid() || !config.connected)
   {
     LCD.setTextDatum(TC_DATUM);

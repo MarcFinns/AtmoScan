@@ -383,8 +383,10 @@ void setup()
     // Log ESP configuration
 #ifdef DEBUG_SYSLOG
     logESPconfig();
-#endif
 
+    // log SPIFFS usage
+    listFiles();
+#endif
   }
   else
   {
@@ -870,4 +872,33 @@ String byte2hex(unsigned char buf)
   return  String(onebyte) ;
 
 }
+
+
+//====================================================================================
+//                 Print a SPIFFS directory list (root directory)
+//                 Created by Bodmer 15th Jan 2017
+//                 Modified by MarcFinns 15 Oct 2018
+//====================================================================================
+
+void listFiles()
+{
+
+  fs::Dir dir = SPIFFS.openDir("/"); // Root directory
+  syslog.log(LOG_DEBUG, F("===========SPIFFS USAGE =========="));
+  uint32_t totalBytes = 0;
+  int fileCount = 0;
+  while (dir.next())
+  {
+    String listItem;
+    listItem = dir.fileName();
+    fs::File f = dir.openFile("r");
+    syslog.log(LOG_DEBUG, dir.fileName() + String(f.size()) + " bytes");
+    totalBytes += f.size();
+    yield();
+    fileCount++;
+  }
+  yield();
+  syslog.log(LOG_DEBUG, String(fileCount) + F(" files, ") + F("Total = ") + String(totalBytes) +  F(" bytes"));
+}
+//====================================================================================
 #endif
