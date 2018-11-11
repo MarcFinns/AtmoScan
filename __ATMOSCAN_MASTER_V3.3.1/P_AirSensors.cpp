@@ -303,9 +303,8 @@ void Proc_CO2Sensor::service()
 
   unsigned char Buffer[MHZ19_RESPONSE_SIZE];
 
-#ifdef DEBUG_SYSLOG
-  syslog.log(LOG_DEBUG, "Reading  for CO2 data");
-#endif
+  // Reset error conditions
+  readError = false;
 
   // Clear buffer for any spurious data received since last reading
   co2Serial.flush();
@@ -447,9 +446,8 @@ void Proc_ParticleSensor::service()
 
   unsigned char Buffer[PMS7003_RESPONSE_SIZE];
 
-#ifdef DEBUG_SYSLOG
-  syslog.log(LOG_DEBUG, F("Reading  for particle data"));
-#endif
+  // Reset error conditions
+  readError = false;
 
   // Clear serial input buffer from spurious characters
   while (Serial.available() > 0)
